@@ -51,7 +51,7 @@
 
         <activity
             android:name="com.mediapicker.gallery.presentation.activity.MediaGalleryActivity"
-            android:exported="false"
+            android:exported="true"
             android:screenOrientation="portrait" />
 
         <provider
