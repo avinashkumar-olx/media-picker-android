@@ -117,7 +117,7 @@ open class PhotoCarousalFragment : BaseFragment(), GalleryPagerCommunicator,
         ossFragmentCarousalBinding?.button?.setOnClickListener {
             requestPermissions()
         }
-        checkPermission()
+        requestPermissions()
     }
 
 
