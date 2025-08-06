@@ -114,8 +114,10 @@ open class PhotoCarousalFragment : BaseFragment(), GalleryPagerCommunicator,
             toolbarTitle.gravity = Gallery.galleryConfig.galleryLabels.titleAlignment
             toolbarBackButton.setImageResource(Gallery.galleryConfig.galleryUiConfig.backIcon)
         }
-        requestPermissions()
-    }
+        ossFragmentCarousalBinding?.button?.setOnClickListener {
+            requestPermissions()
+        }
+        checkPermission()    }
 
 
     private fun checkPermissions() {
