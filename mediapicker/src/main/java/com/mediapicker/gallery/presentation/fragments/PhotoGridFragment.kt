@@ -145,6 +145,7 @@ open class PhotoGridFragment : BaseViewPagerItemFragment() {
     private fun startTakingPicture() {
         /*trackingContextRepository.setPictureOrigin(NinjaParamValues.TAKE_PICTURE)
         trackingService.postingPictureSelect()*/
+        Gallery.galleryConfig.galleryCommunicator?.pictureSelect()
 
         isExpectingNewPhoto = true
         val lastRequestFileToSave = FileUtils.getNewPhotoFileOnPicturesDirectory()
@@ -270,6 +271,7 @@ open class PhotoGridFragment : BaseViewPagerItemFragment() {
         addItem(photo)
         Gallery.pagerCommunicator?.onItemClicked(photo, true)
         Gallery.carousalActionListener?.onItemClicked(photo, true)
+        Gallery.galleryConfig.galleryCommunicator?.onImageAdded()
         //trackingService.postingPictureComplete()
         return true
     }
@@ -356,6 +358,7 @@ fun LinkedHashSet<PhotoFile>.removePhoto(photo: PhotoFile) {
         val item = iterator.next()
         if (item == photo) {
             iterator.remove()
+            Gallery.galleryConfig.galleryCommunicator?.onImageRemove()
         }
     }
 }

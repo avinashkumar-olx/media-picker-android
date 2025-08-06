@@ -35,6 +35,7 @@ class BridgeViewModel(
     fun getClosingSignal() = closeHostingViewLiveData
 
     fun setCurrentSelectedPhotos(listOfSelectedPhotos: List<PhotoFile>) {
+        galleryConfig.galleryCommunicator?.onImageUpdated()
         this.listOfSelectedPhotos = listOfSelectedPhotos
         shouldEnableActionButton()
     }
@@ -85,6 +86,7 @@ class BridgeViewModel(
 
     fun shouldUseMyCamera(): Boolean {
         galleryConfig.galleryCommunicator?.captureImage()
+        galleryConfig.galleryCommunicator?.takePicture()
         return galleryConfig.shouldUsePhotoCamera
     }
 
