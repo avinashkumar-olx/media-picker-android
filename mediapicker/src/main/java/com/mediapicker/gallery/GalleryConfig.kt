@@ -18,7 +18,7 @@ class GalleryConfig(
     val photoViewPlaceHolder: Int,
     val showPreviewCarousal: CarousalConfig,
     val typeOfMediaSupported: MediaType,
-    val validation: Validation,
+    var validation: Validation,
     val photoTag: PhotoTag,
     val mediaScanningCriteria: MediaScanningCriteria,
     val textAllCaps: Boolean,

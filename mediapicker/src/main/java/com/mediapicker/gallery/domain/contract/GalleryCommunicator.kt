@@ -28,6 +28,12 @@ interface IGalleryCommunicator{
 //    fun onShowPermissionRationale(permissionRequest: PermissionRequestWrapper)
 
     fun onStepValidate(isValid: Boolean)
+
+    fun takePicture()
+    fun onImageRemove()
+    fun pictureSelect()
+    fun onImageAdded()
+    fun onImageUpdated()
 }
 
 internal interface GalleryPagerCommunicator {
@@ -81,5 +87,25 @@ internal class GalleryCommunicatorDefaultImpl : IGalleryCommunicator{
 
     override fun onStepValidate(isValid: Boolean) {
         //Need Implementation
+    }
+
+    override fun takePicture() {
+
+    }
+
+    override fun onImageRemove() {
+
+    }
+
+    override fun pictureSelect() {
+
+    }
+
+    override fun onImageAdded() {
+
+    }
+
+    override fun onImageUpdated() {
+
     }
 }
