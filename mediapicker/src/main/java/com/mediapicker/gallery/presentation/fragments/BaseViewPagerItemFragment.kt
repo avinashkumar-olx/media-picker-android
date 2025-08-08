@@ -23,8 +23,7 @@ abstract class BaseViewPagerItemFragment : BaseFragment() {
         getActivityScopedViewModel {
             BridgeViewModel(
                 emptyList(),
-                emptyList(),
-                Gallery.galleryConfig
+                emptyList()
             )
         }
     }
