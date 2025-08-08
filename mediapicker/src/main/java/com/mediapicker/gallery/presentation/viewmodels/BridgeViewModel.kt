@@ -2,6 +2,7 @@ package com.mediapicker.gallery.presentation.viewmodels
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.mediapicker.gallery.Gallery
 import com.mediapicker.gallery.GalleryConfig
 import com.mediapicker.gallery.domain.action.RuleAction
 import com.mediapicker.gallery.domain.entity.PhotoFile
@@ -9,10 +10,13 @@ import com.mediapicker.gallery.domain.entity.PhotoFile
 class BridgeViewModel(
     private var listOfSelectedPhotos: List<PhotoFile>,
     private var listOfSelectedVideos: List<VideoFile>,
-    private val galleryConfig: GalleryConfig
 ) : ViewModel() {
 
-    private val ruleAction: RuleAction = RuleAction(galleryConfig.validation)
+    private val galleryConfig: GalleryConfig
+        get() = Gallery.galleryConfig
+
+    private val ruleAction: RuleAction
+        get() = RuleAction(Gallery.galleryConfig.validation)
 
     private val reloadMediaLiveData = MutableLiveData<Unit>()
 

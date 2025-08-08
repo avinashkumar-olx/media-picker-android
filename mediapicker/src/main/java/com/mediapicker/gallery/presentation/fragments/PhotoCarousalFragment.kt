@@ -65,8 +65,7 @@ open class PhotoCarousalFragment : BaseFragment(), GalleryPagerCommunicator,
         getActivityScopedViewModel {
             BridgeViewModel(
                 getPhotosFromArguments(),
-                getVideosFromArguments(),
-                Gallery.galleryConfig
+                getVideosFromArguments()
             )
         }
     }

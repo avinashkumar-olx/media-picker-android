@@ -45,8 +45,7 @@ open class HomeFragment : BaseFragment() {
         getActivityScopedViewModel {
             BridgeViewModel(
                 getPhotosFromArguments(),
-                getVideosFromArguments(),
-                Gallery.galleryConfig
+                getVideosFromArguments()
             )
         }
     }
