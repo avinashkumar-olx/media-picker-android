@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.Log
 import android.view.View
 import android.widget.LinearLayout
 import androidx.activity.result.contract.ActivityResultContracts
@@ -38,6 +39,24 @@ private const val PHOTO_PREVIEW = 43475
 
 open class PhotoCarousalFragment : BaseFragment(), GalleryPagerCommunicator,
     MediaGalleryView.OnGalleryItemClickListener {
+
+    companion object {
+        private const val TAG = "PhotoCarousalFragment"
+
+        fun getInstance(
+            listOfSelectedPhotos: List<PhotoFile> = emptyList(),
+            listOfSelectedVideos: List<VideoFile> = emptyList(),
+            defaultPageType: DefaultPage = DefaultPage.PhotoPage
+        ): PhotoCarousalFragment {
+            return PhotoCarousalFragment().apply {
+                this.arguments = Bundle().apply {
+                    putSerializable(EXTRA_SELECTED_PHOTOS, listOfSelectedPhotos as Serializable)
+                    putSerializable(EXTRA_SELECTED_VIDEOS, listOfSelectedVideos as Serializable)
+                    putSerializable(EXTRA_DEFAULT_PAGE, defaultPageType)
+                }
+            }
+        }
+    }
 
     private var permissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { granted ->
@@ -86,6 +105,7 @@ open class PhotoCarousalFragment : BaseFragment(), GalleryPagerCommunicator,
             ?: getString(R.string.oss_title_home_screen)
 
     override fun setUpViews() {
+        Log.d(TAG, "setUpViews is called")
         Gallery.pagerCommunicator = this
 
         if (Gallery.galleryConfig.showPreviewCarousal.showCarousal) {
@@ -121,6 +141,7 @@ open class PhotoCarousalFragment : BaseFragment(), GalleryPagerCommunicator,
 
 
     private fun checkPermissions() {
+        Log.d(TAG, "checkPermissions is called")
         if (!isRemoving && isAdded) {
             when (homeViewModel.getMediaType()) {
                 GalleryConfig.MediaType.PhotoOnly -> {
@@ -149,23 +170,28 @@ open class PhotoCarousalFragment : BaseFragment(), GalleryPagerCommunicator,
     }
 
     private fun onPermissionDenied() {
+        Log.d(TAG, "onPermissionDenied is called")
         checkPermission()
         Gallery.galleryConfig.galleryCommunicator?.onPermissionDenied()
     }
 
     private fun addMediaForPager(mediaGalleryEntity: MediaGalleryEntity) {
+        Log.d(TAG, "addMediaForPager is called")
         ossFragmentCarousalBinding?.mediaGalleryView?.addMediaForPager(mediaGalleryEntity)
     }
 
     private fun removeMediaFromPager(mediaGalleryEntity: MediaGalleryEntity) {
+        Log.d(TAG, "removeMediaFromPager is called")
         ossFragmentCarousalBinding?.mediaGalleryView?.removeMediaFromPager(mediaGalleryEntity)
     }
 
     private fun showNeverAskAgainPermission() {
+        Log.d(TAG, "showNeverAskAgainPermission is called")
         Gallery.galleryConfig.galleryCommunicator?.onNeverAskPermissionAgain()
     }
 
     override fun initViewModels() {
+        Log.d(TAG, "initViewModels is called")
         super.initViewModels()
         bridgeViewModel.getActionState().observe(this) { changeActionButtonState(it) }
         bridgeViewModel.getError().observe(this) { showError(it) }
@@ -173,36 +199,46 @@ open class PhotoCarousalFragment : BaseFragment(), GalleryPagerCommunicator,
     }
 
     private fun closeIfHostingOnActivity() {
+        Log.d(TAG, "closeIfHostingOnActivity is called")
         if (requireActivity() is GalleryActivity) {
             requireActivity().finish()
         }
     }
 
-    override fun setHomeAsUp() = true
+    override fun setHomeAsUp() = run {
+        Log.d(TAG, "setHomeAsUp is called")
+        true
+    }
 
     fun setActionButtonLabel(label: String) {
+        Log.d(TAG, "setActionButtonLabel is called")
         ossFragmentCarousalBinding?.actionButton?.text = label
     }
 
     fun setCarousalActionListener(carousalActionListener: CarousalActionListener?) {
+        Log.d(TAG, "setCarousalActionListener is called")
         Gallery.carousalActionListener = carousalActionListener
     }
 
     override fun onBackPressed() {
+        Log.d(TAG, "onBackPressed is called")
         closeIfHostingOnActivity()
         bridgeViewModel.onBackPressed()
     }
 
     private fun changeActionButtonState(state: Boolean) {
+        Log.d(TAG, "changeActionButtonState is called")
         Gallery.galleryConfig.galleryCommunicator?.onStepValidate(state)
         ossFragmentCarousalBinding?.actionButton?.isSelected = state
     }
 
     private fun showError(error: String) {
+        Log.d(TAG, "showError is called")
         view?.let { SnackbarUtils.show(it, error, Snackbar.LENGTH_LONG) }
     }
 
     private fun setUpWithOutTabLayout() {
+        Log.d(TAG, "setUpWithOutTabLayout is called")
         ossFragmentCarousalBinding?.tabLayout?.visibility = View.GONE
         ossFragmentCarousalBinding?.mediaGalleryView?.setImagesForPager(
             convertPhotoFileToMediaGallery(
@@ -223,6 +259,7 @@ open class PhotoCarousalFragment : BaseFragment(), GalleryPagerCommunicator,
     }
 
     private fun openPage() {
+        Log.d(TAG, "openPage is called")
         if (defaultPageToOpen is DefaultPage.PhotoPage) {
             ossFragmentCarousalBinding?.viewPager?.currentItem = 0
         } else {
@@ -231,10 +268,12 @@ open class PhotoCarousalFragment : BaseFragment(), GalleryPagerCommunicator,
     }
 
     private fun onActionButtonClicked() {
+        Log.d(TAG, "onActionButtonClicked is called")
         bridgeViewModel.complyRules()
     }
 
     private fun setUpWithTabLayout() {
+        Log.d(TAG, "setUpWithTabLayout is called")
         ossFragmentCarousalBinding?.viewPager.apply {
             PagerAdapter(
                 childFragmentManager, listOf(
@@ -272,6 +311,7 @@ open class PhotoCarousalFragment : BaseFragment(), GalleryPagerCommunicator,
 
 
     private fun getPageFromArguments(): DefaultPage {
+        Log.d(TAG, "getPageFromArguments is called")
         this.arguments?.let {
             if (it.containsKey(EXTRA_DEFAULT_PAGE)) {
                 return it.getSerializable(EXTRA_DEFAULT_PAGE) as DefaultPage
@@ -281,26 +321,12 @@ open class PhotoCarousalFragment : BaseFragment(), GalleryPagerCommunicator,
     }
 
     fun reloadMedia() {
+        Log.d(TAG, "reloadMedia is called")
         bridgeViewModel.reloadMedia()
     }
 
-    companion object {
-        fun getInstance(
-            listOfSelectedPhotos: List<PhotoFile> = emptyList(),
-            listOfSelectedVideos: List<VideoFile> = emptyList(),
-            defaultPageType: DefaultPage = DefaultPage.PhotoPage
-        ): PhotoCarousalFragment {
-            return PhotoCarousalFragment().apply {
-                this.arguments = Bundle().apply {
-                    putSerializable(EXTRA_SELECTED_PHOTOS, listOfSelectedPhotos as Serializable)
-                    putSerializable(EXTRA_SELECTED_VIDEOS, listOfSelectedVideos as Serializable)
-                    putSerializable(EXTRA_DEFAULT_PAGE, defaultPageType)
-                }
-            }
-        }
-    }
-
     override fun onItemClicked(photoFile: PhotoFile, isSelected: Boolean) {
+        Log.d(TAG, "onItemClicked is called")
         if (isSelected) {
             if (Gallery.galleryConfig.showPreviewCarousal.addImage) {
                 addMediaForPager(getMediaEntity(photoFile))
@@ -313,6 +339,7 @@ open class PhotoCarousalFragment : BaseFragment(), GalleryPagerCommunicator,
     }
 
     private fun getMediaEntity(photo: PhotoFile): MediaGalleryEntity {
+        Log.d(TAG, "getMediaEntity is called")
         var path: String? = photo.fullPhotoUrl
         var isLocalImage = false
         if (!TextUtils.isEmpty(photo.path) && photo.path?.contains("/")!!) {
@@ -329,6 +356,7 @@ open class PhotoCarousalFragment : BaseFragment(), GalleryPagerCommunicator,
     }
 
     private fun convertPhotoFileToMediaGallery(photoList: List<PhotoFile>): ArrayList<MediaGalleryEntity> {
+        Log.d(TAG, "convertPhotoFileToMediaGallery is called")
         val mediaList = ArrayList<MediaGalleryEntity>()
         for (photo in photoList) {
             mediaList.add(getMediaEntity(photo))
@@ -337,6 +365,7 @@ open class PhotoCarousalFragment : BaseFragment(), GalleryPagerCommunicator,
     }
 
     override fun onPreviewItemsUpdated(listOfSelectedPhotos: List<PhotoFile>) {
+        Log.d(TAG, "onPreviewItemsUpdated is called")
         if (Gallery.galleryConfig.showPreviewCarousal.addImage) {
             ossFragmentCarousalBinding?.mediaGalleryView?.setImagesForPager(
                 convertPhotoFileToMediaGallery(listOfSelectedPhotos)
@@ -345,6 +374,7 @@ open class PhotoCarousalFragment : BaseFragment(), GalleryPagerCommunicator,
     }
 
     override fun onGalleryItemClick(mediaIndex: Int) {
+        Log.d(TAG, "onGalleryItemClick is called")
         Gallery.carousalActionListener?.onGalleryImagePreview(
             mediaIndex,
             bridgeViewModel.getSelectedPhotos().size
@@ -359,10 +389,12 @@ open class PhotoCarousalFragment : BaseFragment(), GalleryPagerCommunicator,
     }
 
     private fun requestPermissions() {
+        Log.d(TAG, "requestPermissions is called")
         PermissionsUtil.requestPermissions(requireActivity(), permissionLauncher)
     }
 
     private fun checkPermission() {
+        Log.d(TAG, "checkPermission is called")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
             && (ContextCompat.checkSelfPermission(
                 requireContext(),
