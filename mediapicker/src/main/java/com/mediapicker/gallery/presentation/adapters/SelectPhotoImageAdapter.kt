@@ -173,10 +173,7 @@ class SelectPhotoImageAdapter(
     }
 
     private fun setSelectedPhoto(photoViewHolder: PhotoViewHolder) {
-        if (Gallery.galleryConfig.photoTag.shouldShowPhotoTag) {
-            photoViewHolder.binding.imgCoverText.visibility = View.VISIBLE
-            photoViewHolder.binding.imgCoverText.text = Gallery.galleryConfig.photoTag.photoTagText
-        } else if (listCurrentPhotos.indexOf(photoViewHolder.photoFile) == 0 && Gallery.galleryConfig.needToShowCover.shouldShowPhotoTag) {
+        if (listCurrentPhotos.indexOf(photoViewHolder.photoFile) == 0 && Gallery.galleryConfig.needToShowCover.shouldShowPhotoTag) {
             photoViewHolder.binding.imgCoverText.visibility = View.VISIBLE
             photoViewHolder.binding.imgCoverText.text =
                 Gallery.galleryConfig.needToShowCover.photoTagText
