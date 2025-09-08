@@ -62,7 +62,7 @@ open class HomeFragment : BaseFragment() {
     override fun getLayoutId() = R.layout.oss_fragment_main
 
     override fun getScreenTitle() =
-        Gallery.galleryConfig.galleryLabels.homeTitle?.ifBlank { getString(R.string.oss_title_home_screen) }
+        Gallery.galleryConfig?.galleryLabels?.homeTitle?.ifBlank { getString(R.string.oss_title_home_screen) }
             ?: getString(R.string.oss_title_home_screen)
 
     override fun setUpViews() {

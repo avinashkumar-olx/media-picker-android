@@ -62,7 +62,7 @@ class FolderViewFragment : BaseGalleryViewFragment(), OnItemClickListener<PhotoA
         }
         ossFragmentFolderView?.actionButton?.isSelected = true
 
-        if (Gallery.galleryConfig.galleryLabels.galleryFolderAction?.isNotBlank() == true) {
+        if (Gallery.galleryConfig?.galleryLabels?.galleryFolderAction?.isNotBlank() == true) {
             ossFragmentFolderView?.actionButton?.text =
                 Gallery.galleryConfig.galleryLabels.galleryFolderAction
         }
