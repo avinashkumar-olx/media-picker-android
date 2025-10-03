@@ -69,7 +69,7 @@ open class HomeFragment : BaseFragment() {
         ossFragmentMainBinding?.actionButton?.apply {
             setOnClickListener { onActionButtonClicked() }
             text =
-                Gallery.galleryConfig.galleryLabels.homeAction?.ifBlank { getString(R.string.oss_posting_next) }
+                Gallery.galleryConfig?.galleryLabels?.homeAction?.ifBlank { getString(R.string.oss_posting_next) }
                     ?: getString(R.string.oss_posting_next)
             isSelected = false
         }
