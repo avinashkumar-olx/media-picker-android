@@ -93,7 +93,7 @@ class SelectPhotoImageAdapter(
                 )
 
                 cameraViewHolder.itemView.setOnClickListener { onClickCamera() }
-                cameraViewHolder.binding.folderName.isAllCaps = Gallery.galleryConfig.textAllCaps
+                cameraViewHolder.binding.folderName.isAllCaps = Gallery.galleryConfig?.textAllCaps == true
                 cameraViewHolder.binding.folderName.text =
                     viewHolder.itemView.context.getString(R.string.oss_label_camera)
                 cameraViewHolder.binding.img.setImageResource(uiConfig.cameraIcon)
@@ -112,7 +112,7 @@ class SelectPhotoImageAdapter(
                 )
 
                 cameraViewHolder.itemView.setOnClickListener { onGalleryItemClickListener.onFolderItemClick() }
-                cameraViewHolder.binding.folderName.isAllCaps = Gallery.galleryConfig.textAllCaps
+                cameraViewHolder.binding.folderName.isAllCaps = Gallery.galleryConfig?.textAllCaps == true
                 cameraViewHolder.binding.folderName.text =
                     viewHolder.itemView.context.getString(R.string.oss_label_folder)
                 cameraViewHolder.binding.img.setImageResource(uiConfig.folderIcon)
@@ -173,7 +173,7 @@ class SelectPhotoImageAdapter(
     }
 
     private fun setSelectedPhoto(photoViewHolder: PhotoViewHolder) {
-        if (listCurrentPhotos.indexOf(photoViewHolder.photoFile) == 0 && Gallery.galleryConfig.needToShowCover.shouldShowPhotoTag) {
+        if (listCurrentPhotos.indexOf(photoViewHolder.photoFile) == 0 && Gallery.galleryConfig?.needToShowCover?.shouldShowPhotoTag == true) {
             photoViewHolder.binding.imgCoverText.visibility = View.VISIBLE
             photoViewHolder.binding.imgCoverText.text =
                 Gallery.galleryConfig.needToShowCover.photoTagText

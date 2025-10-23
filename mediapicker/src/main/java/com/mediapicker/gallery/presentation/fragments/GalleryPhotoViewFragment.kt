@@ -80,13 +80,13 @@ class GalleryPhotoViewFragment : BaseGalleryViewFragment() {
 
         ossFragmentFolderView?.actionButton?.isSelected = true
 
-        if (Gallery.galleryConfig.galleryLabels.galleryFolderAction?.isNotBlank() == true) {
+        if (Gallery.galleryConfig?.galleryLabels?.galleryFolderAction?.isNotBlank() == true) {
             ossFragmentFolderView?.actionButton?.text =
                 Gallery.galleryConfig.galleryLabels.galleryFolderAction
         }
         ossFragmentBaseBinding?.ossCustomTool?.toolbarTitle?.isAllCaps =
-            Gallery.galleryConfig.textAllCaps
-        ossFragmentFolderView?.actionButton?.isAllCaps = Gallery.galleryConfig.textAllCaps
+            Gallery.galleryConfig?.textAllCaps == true
+        ossFragmentFolderView?.actionButton?.isAllCaps = Gallery.galleryConfig?.textAllCaps == true
 
 //        baseBinding.customToolbar.apply {
 //            toolbarTitle.isAllCaps = Gallery.galleryConfig.textAllCaps

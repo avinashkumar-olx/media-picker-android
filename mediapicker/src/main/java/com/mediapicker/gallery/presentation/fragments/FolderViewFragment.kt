@@ -66,9 +66,9 @@ class FolderViewFragment : BaseGalleryViewFragment(), OnItemClickListener<PhotoA
             ossFragmentFolderView?.actionButton?.text =
                 Gallery.galleryConfig.galleryLabels.galleryFolderAction
         }
-        ossFragmentFolderView?.actionButton?.isAllCaps = Gallery.galleryConfig.textAllCaps
+        ossFragmentFolderView?.actionButton?.isAllCaps = Gallery.galleryConfig?.textAllCaps == true
         ossFragmentBaseBinding?.ossCustomTool?.toolbarTitle?.apply {
-            isAllCaps = Gallery.galleryConfig.textAllCaps
+            isAllCaps = Gallery.galleryConfig?.textAllCaps == true
             gravity = Gallery.galleryConfig.galleryLabels.titleAlignment
         }
     }
