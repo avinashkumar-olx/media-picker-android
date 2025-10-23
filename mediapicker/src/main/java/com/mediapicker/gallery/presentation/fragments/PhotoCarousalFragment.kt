@@ -101,7 +101,7 @@ open class PhotoCarousalFragment : BaseFragment(), GalleryPagerCommunicator,
     override fun getLayoutId() = R.layout.oss_fragment_carousal
 
     override fun getScreenTitle() =
-        Gallery.galleryConfig.galleryLabels.homeTitle?.ifBlank { getString(R.string.oss_title_home_screen) }
+        Gallery.galleryConfig?.galleryLabels?.homeTitle?.ifBlank { getString(R.string.oss_title_home_screen) }
             ?: getString(R.string.oss_title_home_screen)
 
     override fun setUpViews() {
@@ -126,7 +126,7 @@ open class PhotoCarousalFragment : BaseFragment(), GalleryPagerCommunicator,
                 getString(R.string.oss_posting_next)
         ossFragmentCarousalBinding?.actionButton?.isAllCaps = Gallery.galleryConfig.textAllCaps
         ossFragmentCarousalBinding?.actionButton?.text =
-            Gallery.galleryConfig.galleryLabels.homeAction?.ifBlank { getString(R.string.oss_posting_next) }
+            Gallery.galleryConfig?.galleryLabels?.homeAction?.ifBlank { getString(R.string.oss_posting_next) }
                 ?: getString(R.string.oss_posting_next)
         ossFragmentBaseBinding?.ossCustomTool?.apply {
             toolbarTitle.isAllCaps = Gallery.galleryConfig.textAllCaps

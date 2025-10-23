@@ -104,6 +104,8 @@ open class HomeFragment : BaseFragment() {
             GalleryConfig.MediaType.PhotoWithoutCameraFolderOnly -> {
                 setUpWithOutTabLayout()
             }
+
+            else -> { /* Not required, it is for null case */  }
         }
         openPage()
         ossFragmentMainBinding?.actionButton?.isSelected = false
@@ -115,12 +117,12 @@ open class HomeFragment : BaseFragment() {
         checkPermission()
 
         // activity?.supportFragmentManager?.popBackStack()
-        Gallery.galleryConfig.galleryCommunicator?.onPermissionDenied()
+        Gallery.galleryConfig?.galleryCommunicator?.onPermissionDenied()
     }
 
     fun showNeverAskAgainPermission() {
         //. Toast.makeText(context, R.string.oss_permissions_denied_attach_image, Toast.LENGTH_LONG).show()
-        Gallery.galleryConfig.galleryCommunicator?.onNeverAskPermissionAgain()
+        Gallery.galleryConfig?.galleryCommunicator?.onNeverAskPermissionAgain()
     }
 
     override fun initViewModels() {
