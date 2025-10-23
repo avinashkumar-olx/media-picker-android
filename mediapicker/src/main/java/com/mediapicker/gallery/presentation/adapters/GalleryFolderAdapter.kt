@@ -53,7 +53,7 @@ class FolderViewHolder(
     fun bind(album: PhotoAlbum) {
         binding.root.setOnClickListener { onItemClickListener?.onListItemClick(album) }
         binding.folderName.text = album.name
-        binding.folderName.isAllCaps = Gallery.galleryConfig.textAllCaps
+        binding.folderName.isAllCaps = Gallery.galleryConfig?.textAllCaps == true
         if (album.hasPhotos()) {
             binding.backgroundImage.visibility = View.VISIBLE
             loadImageIntoView(

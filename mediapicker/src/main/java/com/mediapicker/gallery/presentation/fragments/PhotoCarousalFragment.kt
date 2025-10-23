@@ -101,35 +101,35 @@ open class PhotoCarousalFragment : BaseFragment(), GalleryPagerCommunicator,
     override fun getLayoutId() = R.layout.oss_fragment_carousal
 
     override fun getScreenTitle() =
-        Gallery.galleryConfig.galleryLabels.homeTitle?.ifBlank { getString(R.string.oss_title_home_screen) }
+        Gallery.galleryConfig?.galleryLabels?.homeTitle?.ifBlank { getString(R.string.oss_title_home_screen) }
             ?: getString(R.string.oss_title_home_screen)
 
     override fun setUpViews() {
         Log.d(TAG, "setUpViews is called")
         Gallery.pagerCommunicator = this
 
-        if (Gallery.galleryConfig.showPreviewCarousal.showCarousal) {
+        if (Gallery.galleryConfig?.showPreviewCarousal?.showCarousal == true) {
             ossFragmentCarousalBinding?.mediaGalleryViewContainer?.visibility = View.VISIBLE
             ossFragmentCarousalBinding?.mediaGalleryView?.setOnGalleryClickListener(this)
-            if (Gallery.galleryConfig.showPreviewCarousal.imageId != 0) {
+            if (Gallery.galleryConfig?.showPreviewCarousal?.imageId != 0) {
                 ossFragmentCarousalBinding?.mediaGalleryView?.updateDefaultPhoto(Gallery.galleryConfig.showPreviewCarousal.imageId)
             }
-            if (Gallery.galleryConfig.showPreviewCarousal.previewText != 0) {
+            if (Gallery.galleryConfig?.showPreviewCarousal?.previewText != 0) {
                 ossFragmentCarousalBinding?.mediaGalleryView?.updateDefaultText(Gallery.galleryConfig.showPreviewCarousal.previewText)
             }
         }
 
         ossFragmentCarousalBinding?.actionButton?.text =
-            if (Gallery.galleryConfig.galleryLabels.homeAction?.isNotBlank() == true)
+            if (Gallery.galleryConfig?.galleryLabels?.homeAction?.isNotBlank() == true)
                 Gallery.galleryConfig.galleryLabels.homeAction
             else
                 getString(R.string.oss_posting_next)
-        ossFragmentCarousalBinding?.actionButton?.isAllCaps = Gallery.galleryConfig.textAllCaps
+        ossFragmentCarousalBinding?.actionButton?.isAllCaps = Gallery.galleryConfig?.textAllCaps == true
         ossFragmentCarousalBinding?.actionButton?.text =
-            Gallery.galleryConfig.galleryLabels.homeAction?.ifBlank { getString(R.string.oss_posting_next) }
+            Gallery.galleryConfig?.galleryLabels?.homeAction?.ifBlank { getString(R.string.oss_posting_next) }
                 ?: getString(R.string.oss_posting_next)
         ossFragmentBaseBinding?.ossCustomTool?.apply {
-            toolbarTitle.isAllCaps = Gallery.galleryConfig.textAllCaps
+            toolbarTitle.isAllCaps = Gallery.galleryConfig?.textAllCaps == true
             toolbarTitle.gravity = Gallery.galleryConfig.galleryLabels.titleAlignment
             toolbarBackButton.setImageResource(Gallery.galleryConfig.galleryUiConfig.backIcon)
         }

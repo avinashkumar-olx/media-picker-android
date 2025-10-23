@@ -166,6 +166,26 @@ class MainActivity : AppCompatActivity() {
 
         override fun onStepValidate(isValid: Boolean) {
         }
+
+        override fun takePicture() {
+
+        }
+
+        override fun onImageRemove() {
+
+        }
+
+        override fun pictureSelect() {
+
+        }
+
+        override fun onImageAdded() {
+
+        }
+
+        override fun onImageUpdated() {
+
+        }
     }
 
 

@@ -89,22 +89,22 @@ class BridgeViewModel(
 
     private fun onActionButtonClick() {
         Log.d(TAG, "onActionButtonClick is called")
-        galleryConfig.galleryCommunicator?.actionButtonClick(listOfSelectedPhotos, listOfSelectedVideos)
+        galleryConfig?.galleryCommunicator?.actionButtonClick(listOfSelectedPhotos, listOfSelectedVideos)
     }
 
 
     fun shouldRecordVideo() {
         Log.d(TAG, "shouldRecordVideo is called")
-        if (galleryConfig.shouldUseVideoCamera) {
+        if (galleryConfig?.shouldUseVideoCamera == true) {
             recordVideoLiveData.postValue(Unit)
         } else {
-            galleryConfig.galleryCommunicator?.recordVideo()
+            galleryConfig?.galleryCommunicator?.recordVideo()
         }
     }
 
     fun onBackPressed() {
         Log.d(TAG, "onBackPressed is called")
-        galleryConfig.galleryCommunicator?.onCloseMainScreen()
+        galleryConfig?.galleryCommunicator?.onCloseMainScreen()
     }
 
     fun getMaxSelectionLimit(): Int {
@@ -136,12 +136,12 @@ class BridgeViewModel(
         Log.d(TAG, "shouldUseMyCamera is called")
         galleryConfig.galleryCommunicator?.captureImage()
         galleryConfig.galleryCommunicator?.takePicture()
-        return galleryConfig.shouldUsePhotoCamera
+        return galleryConfig?.shouldUsePhotoCamera == true
     }
 
     fun onFolderSelect() {
         Log.d(TAG, "onFolderSelect is called")
-        galleryConfig.galleryCommunicator?.onFolderSelect()
+        galleryConfig?.galleryCommunicator?.onFolderSelect()
     }
 
     fun complyRules() {
