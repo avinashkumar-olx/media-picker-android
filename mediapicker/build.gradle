@@ -64,7 +64,7 @@ afterEvaluate {
 
                 groupId = 'com.github.IndiaOlx'
                 artifactId = 'media-picker-android'
-                version = '2.0.18'
+                version = '2.0.19'
 
                 pom {
                     name = 'Media Picker Android'
