@@ -39,7 +39,7 @@ class ValidatePhotos {
     }
 
     fun complyRulesImages(path: String?): Rule? {
-        Gallery.galleryConfig.validation.rules.forEach { rules ->
+        Gallery.galleryConfig?.validation?.rules?.forEach { rules ->
             if (!complyImageRule(path, rules)) {
                 return rules
             }

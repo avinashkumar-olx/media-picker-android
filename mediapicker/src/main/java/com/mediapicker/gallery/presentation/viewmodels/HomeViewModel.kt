@@ -5,6 +5,6 @@ import com.mediapicker.gallery.GalleryConfig
 
 class HomeViewModel(private val galleryConfig: GalleryConfig) : ViewModel()  {
 
-    fun getMediaType() = galleryConfig.typeOfMediaSupported
+    fun getMediaType() = galleryConfig?.typeOfMediaSupported
 
 }
