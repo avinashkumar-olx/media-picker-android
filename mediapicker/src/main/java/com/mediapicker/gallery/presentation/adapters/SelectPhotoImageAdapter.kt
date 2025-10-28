@@ -81,7 +81,7 @@ class SelectPhotoImageAdapter(
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         when (viewHolder.itemViewType) {
             ITEM_TYPE_CAMERA -> {
-                val uiConfig = Gallery.galleryConfig.galleryUiConfig
+                val uiConfig = Gallery.galleryConfig?.galleryUiConfig ?: return
                 val cameraViewHolder = viewHolder as CameraViewHolder
 
                 val tile = cameraViewHolder.itemView.findViewById<ConstraintLayout>(R.id.gridTile)
@@ -101,7 +101,7 @@ class SelectPhotoImageAdapter(
 
             ITEM_TYPE_ALBUM -> {
                 val cameraViewHolder = viewHolder as CameraViewHolder
-                val uiConfig = Gallery.galleryConfig.galleryUiConfig
+                val uiConfig = Gallery.galleryConfig?.galleryUiConfig ?: return
 
                 val tile = cameraViewHolder.binding.gridTile
                 tile.setBackgroundColor(
@@ -176,7 +176,7 @@ class SelectPhotoImageAdapter(
         if (listCurrentPhotos.indexOf(photoViewHolder.photoFile) == 0 && Gallery.galleryConfig?.needToShowCover?.shouldShowPhotoTag == true) {
             photoViewHolder.binding.imgCoverText.visibility = View.VISIBLE
             photoViewHolder.binding.imgCoverText.text =
-                Gallery.galleryConfig.needToShowCover.photoTagText
+                Gallery.galleryConfig?.needToShowCover?.photoTagText
         } else {
             photoViewHolder.binding.imgCoverText.visibility = View.GONE
         }

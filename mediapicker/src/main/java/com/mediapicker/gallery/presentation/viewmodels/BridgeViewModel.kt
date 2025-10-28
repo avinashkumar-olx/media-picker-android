@@ -17,11 +17,16 @@ class BridgeViewModel(
         private const val TAG = "BridgeViewModel"
     }
 
-    private val galleryConfig: GalleryConfig
+    private val galleryConfig: GalleryConfig?
         get() = Gallery.galleryConfig
 
-    private val ruleAction: RuleAction
-        get() = RuleAction(Gallery.galleryConfig.validation)
+    private val ruleAction: RuleAction?
+        get() {
+            Gallery.galleryConfig?.validation?.let {
+                return RuleAction(it)
+            }
+            return null
+        }
 
     private val reloadMediaLiveData = MutableLiveData<Unit>()
 
@@ -60,7 +65,7 @@ class BridgeViewModel(
 
     fun setCurrentSelectedPhotos(listOfSelectedPhotos: List<PhotoFile>) {
         Log.d(TAG, "setCurrentSelectedPhotos is called")
-        galleryConfig.galleryCommunicator?.onImageUpdated()
+        galleryConfig?.galleryCommunicator?.onImageUpdated()
         this.listOfSelectedPhotos = listOfSelectedPhotos
         shouldEnableActionButton()
     }
@@ -78,11 +83,16 @@ class BridgeViewModel(
 
     private fun shouldEnableActionButton() {
         Log.d(TAG, "shouldEnableActionButton is called")
-        if(galleryConfig.shouldOnlyValidatePhoto()){
-            val status = ruleAction.shouldEnableActionButton(listOfSelectedPhotos.size)
+        if (galleryConfig?.shouldOnlyValidatePhoto() == true) {
+            val status = ruleAction?.shouldEnableActionButton(listOfSelectedPhotos.size) ?: return
             actionButtonStateLiveData.postValue(status)
-        }else{
-            val status = ruleAction.shouldEnableActionButton(Pair(listOfSelectedPhotos.size, listOfSelectedVideos.size))
+        } else {
+            val status = ruleAction?.shouldEnableActionButton(
+                Pair(
+                    listOfSelectedPhotos.size,
+                    listOfSelectedVideos.size
+                )
+            ) ?: return
             actionButtonStateLiveData.postValue(status)
         }
     }
@@ -109,22 +119,22 @@ class BridgeViewModel(
 
     fun getMaxSelectionLimit(): Int {
         Log.d(TAG, "getMaxSelectionLimit is called")
-        return galleryConfig.validation.getMaxPhotoSelectionRule().maxSelectionLimit
+        return galleryConfig?.validation?.getMaxPhotoSelectionRule()?.maxSelectionLimit ?: 1
     }
 
     fun getMaxVideoSelectionLimit(): Int {
         Log.d(TAG, "getMaxVideoSelectionLimit is called")
-        return galleryConfig.validation.getMaxVideoSelectionRule().maxSelectionLimit
+        return galleryConfig?.validation?.getMaxVideoSelectionRule()?.maxSelectionLimit ?: 1
     }
 
     fun getMaxLimitErrorResponse(): String {
         Log.d(TAG, "getMaxLimitErrorResponse is called")
-        return galleryConfig.validation.getMaxPhotoSelectionRule().message
+        return galleryConfig?.validation?.getMaxPhotoSelectionRule()?.message ?: ""
     }
 
     fun getMaxVideoLimitErrorResponse(): String {
         Log.d(TAG, "getMaxVideoLimitErrorResponse is called")
-        return galleryConfig.validation.getMaxVideoSelectionRule().message
+        return galleryConfig?.validation?.getMaxVideoSelectionRule()?.message ?: ""
     }
 
     fun reloadMedia() {
@@ -134,8 +144,8 @@ class BridgeViewModel(
 
     fun shouldUseMyCamera(): Boolean {
         Log.d(TAG, "shouldUseMyCamera is called")
-        galleryConfig.galleryCommunicator?.captureImage()
-        galleryConfig.galleryCommunicator?.takePicture()
+        galleryConfig?.galleryCommunicator?.captureImage()
+        galleryConfig?.galleryCommunicator?.takePicture()
         return galleryConfig?.shouldUsePhotoCamera == true
     }
 
@@ -146,8 +156,8 @@ class BridgeViewModel(
 
     fun complyRules() {
         Log.d(TAG, "complyRules is called")
-        val error = ruleAction.getFirstFailingMessage(Pair(listOfSelectedPhotos.size, listOfSelectedVideos.size))
-        if (error.isEmpty()) {
+        val error = ruleAction?.getFirstFailingMessage(Pair(listOfSelectedPhotos.size, listOfSelectedVideos.size))
+        if (error.isNullOrEmpty()) {
             onActionButtonClick()
             closeHostingViewLiveData.postValue(true)
         } else {

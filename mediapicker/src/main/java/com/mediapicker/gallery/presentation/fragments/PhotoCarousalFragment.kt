@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
+import android.view.Gravity
 import android.view.View
 import android.widget.LinearLayout
 import androidx.activity.result.contract.ActivityResultContracts
@@ -112,26 +113,31 @@ open class PhotoCarousalFragment : BaseFragment(), GalleryPagerCommunicator,
             ossFragmentCarousalBinding?.mediaGalleryViewContainer?.visibility = View.VISIBLE
             ossFragmentCarousalBinding?.mediaGalleryView?.setOnGalleryClickListener(this)
             if (Gallery.galleryConfig?.showPreviewCarousal?.imageId != 0) {
-                ossFragmentCarousalBinding?.mediaGalleryView?.updateDefaultPhoto(Gallery.galleryConfig.showPreviewCarousal.imageId)
+                Gallery.galleryConfig?.showPreviewCarousal?.imageId?.let {
+                    ossFragmentCarousalBinding?.mediaGalleryView?.updateDefaultPhoto(it)
+                }
             }
             if (Gallery.galleryConfig?.showPreviewCarousal?.previewText != 0) {
-                ossFragmentCarousalBinding?.mediaGalleryView?.updateDefaultText(Gallery.galleryConfig.showPreviewCarousal.previewText)
+                Gallery.galleryConfig?.showPreviewCarousal?.previewText?.let {
+                    ossFragmentCarousalBinding?.mediaGalleryView?.updateDefaultText(it)
+                }
             }
         }
 
         ossFragmentCarousalBinding?.actionButton?.text =
-            if (Gallery.galleryConfig?.galleryLabels?.homeAction?.isNotBlank() == true)
-                Gallery.galleryConfig.galleryLabels.homeAction
-            else
+            if (Gallery.galleryConfig?.galleryLabels?.homeAction?.isNotBlank() == true) {
+                Gallery.galleryConfig?.galleryLabels?.homeAction
+            } else {
                 getString(R.string.oss_posting_next)
+            }
         ossFragmentCarousalBinding?.actionButton?.isAllCaps = Gallery.galleryConfig?.textAllCaps == true
         ossFragmentCarousalBinding?.actionButton?.text =
             Gallery.galleryConfig?.galleryLabels?.homeAction?.ifBlank { getString(R.string.oss_posting_next) }
                 ?: getString(R.string.oss_posting_next)
         ossFragmentBaseBinding?.ossCustomTool?.apply {
             toolbarTitle.isAllCaps = Gallery.galleryConfig?.textAllCaps == true
-            toolbarTitle.gravity = Gallery.galleryConfig.galleryLabels.titleAlignment
-            toolbarBackButton.setImageResource(Gallery.galleryConfig.galleryUiConfig.backIcon)
+            toolbarTitle.gravity = Gallery.galleryConfig?.galleryLabels?.titleAlignment ?: (Gravity.START or Gravity.CENTER_VERTICAL)
+            Gallery.galleryConfig?.galleryUiConfig?.backIcon?.let { toolbarBackButton.setImageResource(it) }
         }
         ossFragmentCarousalBinding?.button?.setOnClickListener {
             requestPermissions()
@@ -172,7 +178,7 @@ open class PhotoCarousalFragment : BaseFragment(), GalleryPagerCommunicator,
     private fun onPermissionDenied() {
         Log.d(TAG, "onPermissionDenied is called")
         checkPermission()
-        Gallery.galleryConfig.galleryCommunicator?.onPermissionDenied()
+        Gallery.galleryConfig?.galleryCommunicator?.onPermissionDenied()
     }
 
     private fun addMediaForPager(mediaGalleryEntity: MediaGalleryEntity) {
@@ -187,7 +193,7 @@ open class PhotoCarousalFragment : BaseFragment(), GalleryPagerCommunicator,
 
     private fun showNeverAskAgainPermission() {
         Log.d(TAG, "showNeverAskAgainPermission is called")
-        Gallery.galleryConfig.galleryCommunicator?.onNeverAskPermissionAgain()
+        Gallery.galleryConfig?.galleryCommunicator?.onNeverAskPermissionAgain()
     }
 
     override fun initViewModels() {
@@ -228,7 +234,7 @@ open class PhotoCarousalFragment : BaseFragment(), GalleryPagerCommunicator,
 
     private fun changeActionButtonState(state: Boolean) {
         Log.d(TAG, "changeActionButtonState is called")
-        Gallery.galleryConfig.galleryCommunicator?.onStepValidate(state)
+        Gallery.galleryConfig?.galleryCommunicator?.onStepValidate(state)
         ossFragmentCarousalBinding?.actionButton?.isSelected = state
     }
 
@@ -328,11 +334,11 @@ open class PhotoCarousalFragment : BaseFragment(), GalleryPagerCommunicator,
     override fun onItemClicked(photoFile: PhotoFile, isSelected: Boolean) {
         Log.d(TAG, "onItemClicked is called")
         if (isSelected) {
-            if (Gallery.galleryConfig.showPreviewCarousal.addImage) {
+            if (Gallery.galleryConfig?.showPreviewCarousal?.addImage == true) {
                 addMediaForPager(getMediaEntity(photoFile))
             }
         } else {
-            if (Gallery.galleryConfig.showPreviewCarousal.addImage) {
+            if (Gallery.galleryConfig?.showPreviewCarousal?.addImage == true) {
                 removeMediaFromPager(getMediaEntity(photoFile))
             }
         }
@@ -366,7 +372,7 @@ open class PhotoCarousalFragment : BaseFragment(), GalleryPagerCommunicator,
 
     override fun onPreviewItemsUpdated(listOfSelectedPhotos: List<PhotoFile>) {
         Log.d(TAG, "onPreviewItemsUpdated is called")
-        if (Gallery.galleryConfig.showPreviewCarousal.addImage) {
+        if (Gallery.galleryConfig?.showPreviewCarousal?.addImage == true) {
             ossFragmentCarousalBinding?.mediaGalleryView?.setImagesForPager(
                 convertPhotoFileToMediaGallery(listOfSelectedPhotos)
             )

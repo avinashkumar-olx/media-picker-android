@@ -82,7 +82,7 @@ class GalleryPhotoViewFragment : BaseGalleryViewFragment() {
 
         if (Gallery.galleryConfig?.galleryLabels?.galleryFolderAction?.isNotBlank() == true) {
             ossFragmentFolderView?.actionButton?.text =
-                Gallery.galleryConfig.galleryLabels.galleryFolderAction
+                Gallery.galleryConfig?.galleryLabels?.galleryFolderAction
         }
         ossFragmentBaseBinding?.ossCustomTool?.toolbarTitle?.isAllCaps =
             Gallery.galleryConfig?.textAllCaps == true
