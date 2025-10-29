@@ -1,5 +1,6 @@
 package com.mediapicker.gallery.presentation.fragments
 
+import android.view.Gravity
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import com.mediapicker.gallery.Gallery
@@ -64,12 +65,12 @@ class FolderViewFragment : BaseGalleryViewFragment(), OnItemClickListener<PhotoA
 
         if (Gallery.galleryConfig?.galleryLabels?.galleryFolderAction?.isNotBlank() == true) {
             ossFragmentFolderView?.actionButton?.text =
-                Gallery.galleryConfig.galleryLabels.galleryFolderAction
+                Gallery.galleryConfig?.galleryLabels?.galleryFolderAction
         }
         ossFragmentFolderView?.actionButton?.isAllCaps = Gallery.galleryConfig?.textAllCaps == true
         ossFragmentBaseBinding?.ossCustomTool?.toolbarTitle?.apply {
             isAllCaps = Gallery.galleryConfig?.textAllCaps == true
-            gravity = Gallery.galleryConfig.galleryLabels.titleAlignment
+            gravity = Gallery.galleryConfig?.galleryLabels?.titleAlignment ?: (Gravity.START or Gravity.CENTER_VERTICAL)
         }
     }
 

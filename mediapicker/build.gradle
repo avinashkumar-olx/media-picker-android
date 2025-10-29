@@ -1,12 +1,13 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'maven-publish'
 
 android {
-    compileSdk 34
+    compileSdk 35
 
     defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 34
+        minSdkVersion 23
+        targetSdkVersion 35
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
@@ -53,4 +54,27 @@ dependencies {
     implementation "io.coil-kt.coil3:coil-gif:3.0.2"
     implementation "io.coil-kt.coil3:coil-svg:3.0.2"
     implementation "io.coil-kt.coil3:coil-network-okhttp:3.0.2"
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+
+                groupId = 'com.github.IndiaOlx'
+                artifactId = 'media-picker-android'
+                version = '2.0.19'
+
+                pom {
+                    name = 'Media Picker Android'
+                    description = 'Android library for picking media files'
+                    url = 'https://github.com/IndiaOlx/media-picker-android'
+                }
+            }
+        }
+        repositories {
+            mavenLocal()
+        }
+    }
 }

@@ -6,7 +6,7 @@ import com.mediapicker.gallery.domain.entity.Validation
 import com.mediapicker.gallery.presentation.carousalview.CarousalActionListener
 
 object Gallery {
-    internal lateinit var galleryConfig: GalleryConfig
+    internal var galleryConfig: GalleryConfig? = null
 
     internal var pagerCommunicator: GalleryPagerCommunicator? = null
 
@@ -17,25 +17,22 @@ object Gallery {
     }
 
     fun updateCommunicator(galleryCommunicator: IGalleryCommunicator?) {
-        galleryConfig.galleryCommunicator = galleryCommunicator
+        galleryConfig?.galleryCommunicator = galleryCommunicator
     }
 
     fun updateValidation(validation: Validation) {
-        galleryConfig.validation = validation
+        galleryConfig?.validation = validation
     }
 //    internal fun getApp() = galleryConfig.applicationContext
 
-    internal fun getClientAuthority() = galleryConfig.clientAuthority
+    internal fun getClientAuthority() = galleryConfig?.clientAuthority
 
-    internal fun isGalleryConfigInitialized() = this::galleryConfig.isInitialized
+    internal fun isGalleryConfigInitialized() = galleryConfig != null
 
     fun clean() {
         pagerCommunicator = null
         carousalActionListener = null
-
-        if (this::galleryConfig.isInitialized) {
-            galleryConfig.galleryCommunicator = null
-        }
+        galleryConfig = null
     }
 
 }
