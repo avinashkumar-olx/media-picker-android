@@ -6,9 +6,4 @@
     <item android:state_selected="false" android:state_enabled="true">
         <color android:color="@color/oss_disable_action_button" />
     </item>
-<!--
-    <item android:state_enabled="true">
-        <color android:color="@color/colorPrimary" />
-    </item>
--->
 </selector>

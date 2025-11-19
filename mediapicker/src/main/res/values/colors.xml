@@ -7,7 +7,7 @@
     <color name="neutral_background">#EBEEEF</color>
     <color name="background_grey">@color/neutral_background</color>
 
-    <color name="primary">#002f34</color>
+    <color name="primary">#004896</color>
 
 
     <color name="colorPrimary">@color/primary</color>
@@ -19,7 +19,7 @@
     <color name="oss_toolbar_text">#002f34</color>
     <color name="oss_selected_photo_overlay">#B3FFFFFF</color>
     <color name="oss_enable_action_button">@color/primary</color>
-    <color name="oss_disable_action_button">#5C002f34</color>
+    <color name="oss_disable_action_button">#D9DADB</color>
 
 
     <color name="button_background_color">#FF000000</color>

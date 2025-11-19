@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="CustomActionBar"></style>
+    <style name="CustomActionBar" />
 
-    <style name="OSS_CustomButton" parent="@style/Widget.AppCompat.Button.Borderless">
+    <style name="OSS_CustomButton" parent="@style/Widget.Material3.Button">
         <item name="android:background">@drawable/oss_button_selector_state</item>
+        <item name="backgroundTint">@null</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:textSize">@dimen/subtitle_font_size</item>
         <item name="android:textColor">@color/textColorPrimary</item>
