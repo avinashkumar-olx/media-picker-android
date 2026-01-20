@@ -7,22 +7,26 @@ import android.webkit.MimeTypeMap
 import com.mediapicker.gallery.domain.entity.PhotoAlbum
 import com.mediapicker.gallery.domain.entity.PhotoFile
 import com.mediapicker.gallery.domain.repositories.GalleryRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlin.collections.emptySet
 
 open class GalleryService(private val contentResolver: ContentResolver) : GalleryRepository {
 
     companion object {
-        //        fun getInstance(context: Application) = GalleryService(context)
         const val COL_FULL_PHOTO_URL = "fullPhotoUrl"
     }
 
 
-    @Throws(IllegalArgumentException::class)
-    override fun getAlbums(): HashSet<PhotoAlbum> {
-        return queryMedia()
+    override suspend fun getAlbums(): HashSet<PhotoAlbum> {
+        return runCatching {
+            queryMedia()
+        }.getOrElse {
+            hashSetOf()
+        }
     }
 
-
-    private fun queryMedia(): HashSet<PhotoAlbum> {
+    private suspend fun queryMedia(): HashSet<PhotoAlbum> = withContext(Dispatchers.IO) {
         val mutableListOfFolders = hashSetOf<PhotoAlbum>()
         val selection = MediaStore.Images.Media.MIME_TYPE + "!=?"
         val mimeTypeGif = MimeTypeMap.getSingleton().getMimeTypeFromExtension("gif")
@@ -50,24 +54,24 @@ open class GalleryService(private val contentResolver: ContentResolver) : Galler
                 }
             } while (cursor.moveToNext())
         }
-        return mutableListOfFolders
+        return@withContext mutableListOfFolders
     }
 
-    private fun getAlbumEntry(cursor: Cursor): PhotoAlbum? {
+    private suspend fun getAlbumEntry(cursor: Cursor): PhotoAlbum? = withContext(Dispatchers.IO) {
         val albumIdIndex = cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_ID)
 
         val albumNameIndex = cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME)
         if (albumIdIndex != -1 && albumNameIndex != -1) {
             val id = cursor.getInt(albumIdIndex)
             val name = cursor.getString(albumNameIndex)
-            return PhotoAlbum(id.toString(), name)
+            return@withContext PhotoAlbum(id.toString(), name)
         } else {
-            return null
+            return@withContext null
         }
 
     }
 
-    private fun getPhoto(cursor: Cursor): PhotoFile {
+    private suspend fun getPhoto(cursor: Cursor): PhotoFile = withContext(Dispatchers.IO) {
         val id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID))
         val path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA))
         val mimeType =
@@ -77,7 +81,7 @@ open class GalleryService(private val contentResolver: ContentResolver) : Galler
         if (col != -1) {
             fullPhotoUrl = cursor.getString(col)
         }
-        return PhotoFile.Builder()
+        return@withContext PhotoFile.Builder()
             .imageId(id)
             .path(path)
             .smallPhotoUrl("")
