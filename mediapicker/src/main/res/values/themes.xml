@@ -12,8 +12,6 @@
         <item name="android:includeFontPadding">false</item>
         <item name="android:paddingLeft">@dimen/module_medium</item>
         <item name="android:paddingRight">@dimen/module_medium</item>
-        <item name="android:paddingTop">@dimen/module_medium</item>
-        <item name="android:paddingBottom">@dimen/module_medium</item>
         <item name="android:gravity">center</item>
     </style>
 
