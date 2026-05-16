@@ -28,7 +28,7 @@ abstract class BaseLoadMediaViewModel(application: Application) : AndroidViewMod
 
     abstract fun getUniqueLoaderId(): Int
 
-    abstract suspend fun prepareDataForAdapterAndPost(cursor: Cursor)
+    abstract fun prepareDataForAdapterAndPost(cursor: Cursor)
 
 
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<Cursor> {

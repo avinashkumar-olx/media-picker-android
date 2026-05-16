@@ -49,23 +49,22 @@ class LoadPhotoViewModel(private val application: Application) :
 
     override fun getUniqueLoaderId() = 1
 
-    override suspend fun prepareDataForAdapterAndPost(cursor: Cursor) =
-        withContext(Dispatchers.IO) {
-            val listOfGalleryItems: MutableList<IGalleryItem> = ArrayList()
-            if (needToAddCameraView())
-                listOfGalleryItems.add(CameraItem())
-            if (needToAddFolderView())
-                listOfGalleryItems.add(PhotoAlbum.dummyInstance)
-            if (cursor.moveToFirst()) {
-                val photos = ArrayList<IGalleryItem>()
-                do {
-                    val photo = getPhoto(cursor)
-                    photos.add(photo)
-                } while (cursor.moveToNext())
-                listOfGalleryItems.addAll(getFinalListOfGalleryItems(photos))
-            }
-            galleryItemsLiveData.postValue(listOfGalleryItems)
+    override fun prepareDataForAdapterAndPost(cursor: Cursor) {
+        val listOfGalleryItems: MutableList<IGalleryItem> = ArrayList()
+        if (needToAddCameraView())
+            listOfGalleryItems.add(CameraItem())
+        if (needToAddFolderView())
+            listOfGalleryItems.add(PhotoAlbum.dummyInstance)
+        if (cursor.moveToFirst()) {
+            val photos = ArrayList<IGalleryItem>()
+            do {
+                val photo = getPhoto(cursor)
+                photos.add(photo)
+            } while (cursor.moveToNext())
+            listOfGalleryItems.addAll(getFinalListOfGalleryItems(photos))
         }
+        galleryItemsLiveData.postValue(listOfGalleryItems)
+    }
 
 //    private fun unregisterDataSetObserver() {
 //        if (lastLoadedCursor != null && isObserverRegistered) {
