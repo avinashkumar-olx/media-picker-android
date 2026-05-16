@@ -30,17 +30,20 @@ abstract class BaseLoadMediaViewModel(application: Application) : AndroidViewMod
 
     abstract fun prepareDataForAdapterAndPost(cursor: Cursor)
 
+    abstract fun prepareEmptyDataForAdapterAndPost()
 
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<Cursor> {
         return getCursorLoader()
     }
 
     override fun onLoadFinished(loader: Loader<Cursor>, data: Cursor?) {
-        viewModelScope.launch {
-            data?.let {
-                prepareDataForAdapterAndPost(it)
-                loadingStateLiveData.postValue(StateData.SUCCESS)
+        viewModelScope.launch(Dispatchers.Main.immediate) {
+            if (data != null && !data.isClosed) {
+                prepareDataForAdapterAndPost(data)
+            } else {
+                prepareEmptyDataForAdapterAndPost()
             }
+            loadingStateLiveData.postValue(StateData.SUCCESS)
         }
     }
 

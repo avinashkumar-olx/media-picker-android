@@ -65,7 +65,7 @@ class LoadVideoViewModel(private val application: Application) :
         val sizeColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.SIZE)
 
         videoList.add(RecordVideoItem())
-        if (cursor.moveToFirst()) {
+        if (!cursor.isClosed && cursor.moveToFirst()) {
             do {
                 val id = cursor.getLong(idColumn)
                 val name = cursor.getString(nameColumn)
@@ -79,8 +79,14 @@ class LoadVideoViewModel(private val application: Application) :
                 )
                 if (!name.isNullOrBlank() && duration > 0)
                     videoList += VideoFile(id, contentUri, name, duration, size, thumbnail)
-            } while (cursor.moveToNext())
+            } while (!cursor.isClosed && cursor.moveToNext())
         }
+        loadingStateLiveData.postValue(StateData.SUCCESS)
+        videoItemLiveData.postValue(videoList)
+    }
+
+    override fun prepareEmptyDataForAdapterAndPost() {
+        val videoList = listOf<VideoItem>(RecordVideoItem())
         loadingStateLiveData.postValue(StateData.SUCCESS)
         videoItemLiveData.postValue(videoList)
     }
