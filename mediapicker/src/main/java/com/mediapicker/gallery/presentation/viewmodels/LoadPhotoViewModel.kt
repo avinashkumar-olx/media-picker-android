@@ -14,8 +14,6 @@ import com.mediapicker.gallery.domain.entity.IGalleryItem
 import com.mediapicker.gallery.domain.entity.PhotoAlbum
 import com.mediapicker.gallery.domain.entity.PhotoFile
 import com.mediapicker.gallery.presentation.viewmodels.factory.BaseLoadMediaViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 class LoadPhotoViewModel(private val application: Application) :
     BaseLoadMediaViewModel(application) {
@@ -49,23 +47,29 @@ class LoadPhotoViewModel(private val application: Application) :
 
     override fun getUniqueLoaderId() = 1
 
-    override suspend fun prepareDataForAdapterAndPost(cursor: Cursor) =
-        withContext(Dispatchers.IO) {
-            val listOfGalleryItems: MutableList<IGalleryItem> = ArrayList()
-            if (needToAddCameraView())
-                listOfGalleryItems.add(CameraItem())
-            if (needToAddFolderView())
-                listOfGalleryItems.add(PhotoAlbum.dummyInstance)
-            if (cursor.moveToFirst()) {
-                val photos = ArrayList<IGalleryItem>()
-                do {
-                    val photo = getPhoto(cursor)
-                    photos.add(photo)
-                } while (cursor.moveToNext())
-                listOfGalleryItems.addAll(getFinalListOfGalleryItems(photos))
-            }
-            galleryItemsLiveData.postValue(listOfGalleryItems)
+    override fun prepareDataForAdapterAndPost(cursor: Cursor) {
+        val photos = ArrayList<IGalleryItem>()
+        if (!cursor.isClosed && cursor.moveToFirst()) {
+            do {
+                photos.add(getPhoto(cursor))
+            } while (!cursor.isClosed && cursor.moveToNext())
         }
+        galleryItemsLiveData.postValue(buildGalleryItemList(photos))
+    }
+
+    override fun prepareEmptyDataForAdapterAndPost() {
+        galleryItemsLiveData.postValue(buildGalleryItemList(emptyList()))
+    }
+
+    private fun buildGalleryItemList(photos: List<IGalleryItem>): List<IGalleryItem> {
+        val listOfGalleryItems: MutableList<IGalleryItem> = ArrayList()
+        if (needToAddCameraView())
+            listOfGalleryItems.add(CameraItem())
+        if (needToAddFolderView())
+            listOfGalleryItems.add(PhotoAlbum.dummyInstance)
+        listOfGalleryItems.addAll(getFinalListOfGalleryItems(photos))
+        return listOfGalleryItems
+    }
 
 //    private fun unregisterDataSetObserver() {
 //        if (lastLoadedCursor != null && isObserverRegistered) {
