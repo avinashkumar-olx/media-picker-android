@@ -84,12 +84,6 @@ class LoadVideoViewModel(private val application: Application) :
         loadingStateLiveData.postValue(StateData.SUCCESS)
         videoItemLiveData.postValue(videoList)
     }
-
-    override fun prepareEmptyDataForAdapterAndPost() {
-        val videoList = listOf<VideoItem>(RecordVideoItem())
-        loadingStateLiveData.postValue(StateData.SUCCESS)
-        videoItemLiveData.postValue(videoList)
-    }
 }
 
 interface VideoItem
