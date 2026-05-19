@@ -5,12 +5,10 @@ import android.database.Cursor
 import android.os.Bundle
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import androidx.loader.app.LoaderManager
 import androidx.loader.content.Loader
 import com.mediapicker.gallery.presentation.viewmodels.StateData
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import java.util.concurrent.Executors
 
 abstract class BaseLoadMediaViewModel(application: Application) : AndroidViewModel(application),
     LoaderManager.LoaderCallbacks<Cursor> {
@@ -30,20 +28,17 @@ abstract class BaseLoadMediaViewModel(application: Application) : AndroidViewMod
 
     abstract fun prepareDataForAdapterAndPost(cursor: Cursor)
 
-    abstract fun prepareEmptyDataForAdapterAndPost()
 
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<Cursor> {
         return getCursorLoader()
     }
 
     override fun onLoadFinished(loader: Loader<Cursor>, data: Cursor?) {
-        viewModelScope.launch(Dispatchers.Main.immediate) {
-            if (data != null && !data.isClosed) {
-                prepareDataForAdapterAndPost(data)
-            } else {
-                prepareEmptyDataForAdapterAndPost()
+        Executors.newSingleThreadExecutor().submit {
+            data?.let {
+                prepareDataForAdapterAndPost(it)
+                loadingStateLiveData.postValue(StateData.SUCCESS)
             }
-            loadingStateLiveData.postValue(StateData.SUCCESS)
         }
     }
 

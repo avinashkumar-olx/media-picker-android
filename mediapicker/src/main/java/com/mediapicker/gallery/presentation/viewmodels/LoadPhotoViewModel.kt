@@ -57,10 +57,6 @@ class LoadPhotoViewModel(private val application: Application) :
         galleryItemsLiveData.postValue(buildGalleryItemList(photos))
     }
 
-    override fun prepareEmptyDataForAdapterAndPost() {
-        galleryItemsLiveData.postValue(buildGalleryItemList(emptyList()))
-    }
-
     private fun buildGalleryItemList(photos: List<IGalleryItem>): List<IGalleryItem> {
         val listOfGalleryItems: MutableList<IGalleryItem> = ArrayList()
         if (needToAddCameraView())
