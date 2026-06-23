@@ -3,6 +3,8 @@ package com.mediapicker.gallery.utils;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
+
 import com.google.android.material.snackbar.Snackbar;
 import com.mediapicker.gallery.R;
 
@@ -30,7 +32,8 @@ public class SnackbarUtils {
             Snackbar snackbar = Snackbar.make(view, text, length);
 
             TextView textView = snackbar.getView().findViewById(com.google.android.material.R.id.snackbar_text);
-            textView.setTextColor(view.getContext().getResources().getColor(R.color.snackbar_text));
+            var textColor = ContextCompat.getColor(view.getContext(), R.color.Neutral_White);
+            textView.setTextColor(textColor);
 
             return snackbar;
         }

@@ -4,11 +4,11 @@
     android:id="@+id/gridTile"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#ffffff"
+    android:background="@color/Neutral_White"
     android:orientation="vertical"
     android:padding="0.5dp">
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/croppedImage"
         android:layout_width="match_parent"
         android:layout_height="104dp"
@@ -21,27 +21,27 @@
         android:background="#B3FFFFFF"
         android:visibility="gone" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/imgCoverText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|center_horizontal"
         android:layout_margin="@dimen/module_small"
         android:background="@drawable/oss_media_cover_photo_indicator_background"
-        android:paddingStart="@dimen/module_tiny"
-        android:paddingEnd="@dimen/module_tiny"
-        android:paddingLeft="@dimen/module_tiny"
-        android:paddingRight="@dimen/module_tiny"
         android:gravity="center"
         android:includeFontPadding="false"
+        android:paddingStart="@dimen/module_tiny"
+        android:paddingLeft="@dimen/module_tiny"
+        android:paddingEnd="@dimen/module_tiny"
+        android:paddingRight="@dimen/module_tiny"
         android:text="Cover"
         android:textSize="@dimen/label_font_size"
 
         android:visibility="gone"
-        tools:visibility="visible"
-        tools:text="Hello" />
+        tools:text="Hello"
+        tools:visibility="visible" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/imgSelectedText"
         android:layout_width="@dimen/module_base_9"
         android:layout_height="@dimen/module_base_9"
@@ -53,15 +53,15 @@
         android:textSize="@dimen/label_font_size"
         tools:text="2" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/durationLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right|end"
         android:layout_margin="@dimen/module_small"
-        android:background="@color/background_video_duration"
-        android:paddingRight="@dimen/module_small"
+        android:background="@color/PrimaryDark5"
         android:paddingLeft="@dimen/module_small"
+        android:paddingRight="@dimen/module_small"
         android:textColor="@android:color/white"
         android:textSize="@dimen/label_font_size"
         tools:text="00:20" />

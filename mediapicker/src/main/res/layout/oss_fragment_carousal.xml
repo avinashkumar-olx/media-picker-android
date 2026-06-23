@@ -2,9 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/linear_layout_parent"
-    android:background="@android:color/white"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/white"
     android:orientation="vertical">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -60,42 +60,43 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </com.google.android.material.appbar.CollapsingToolbarLayout>
+
             <androidx.cardview.widget.CardView
                 android:id="@+id/permission_access_management"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_margin="10dp"
-                app:cardBackgroundColor="#F4DDDD"
-                app:cardCornerRadius="10dp"
                 android:layout_marginTop="4dp"
                 android:layout_marginBottom="4dp"
+                android:visibility="gone"
+                app:cardBackgroundColor="#F4DDDD"
+                app:cardCornerRadius="10dp"
                 app:layout_constraintBottom_toTopOf="@+id/viewPager"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tabLayout"
-                android:visibility="gone">
+                app:layout_constraintTop_toBottomOf="@id/tabLayout">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center_vertical">
 
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/text_view"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
                         android:layout_weight="1"
                         android:textColor="#594A4A"
-                        android:layout_marginStart="20dp"
                         android:textSize="16sp" />
 
                     <Button
                         android:id="@+id/button"
+                        style="?android:attr/borderlessButtonStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="16sp"
                         android:textColor="#904B4F"
-                        style="?android:attr/borderlessButtonStyle" />
+                        android:textSize="16sp" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
         </com.google.android.material.appbar.AppBarLayout>
@@ -105,10 +106,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:tabBackground="@android:color/white"
-            app:tabIndicatorColor="@color/primary"
-            app:tabSelectedTextColor="@color/primary"
-            app:tabTextColor="@color/oss_tab_text_color" />
-
+            app:tabIndicatorColor="@color/Primary"
+            app:tabSelectedTextColor="@color/Primary"
+            app:tabTextColor="@color/Primary" />
 
         <androidx.viewpager.widget.ViewPager
             android:id="@+id/viewPager"
@@ -119,15 +119,16 @@
         </androidx.viewpager.widget.ViewPager>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-    <androidx.appcompat.widget.AppCompatButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/action_button"
         style="@style/OSS_CustomButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="@dimen/module_medium"
         android:animateLayoutChanges="true"
         android:enabled="true"
-        android:layout_margin="@dimen/module_medium"
         android:text="@string/oss_posting_next"
+        app:elevation="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ossRecycleView" />
 

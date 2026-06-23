@@ -4,11 +4,11 @@
     android:id="@+id/gridTile"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#ffffff"
+    android:background="@color/Neutral_White"
     android:orientation="vertical"
     android:padding="0.5dp">
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/cropedImage"
         android:layout_width="match_parent"
         android:layout_height="104dp"
@@ -18,7 +18,7 @@
         android:id="@+id/white_overlay"
         android:layout_width="match_parent"
         android:layout_height="104dp"
-        android:background="@color/oss_selected_photo_overlay"
+        android:background="@color/NeutralWhite_40"
         android:visibility="gone" />
 
     <LinearLayout
@@ -26,37 +26,35 @@
         android:layout_height="wrap_content"
         android:layout_gravity="top|end">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/imgCoverText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginStart="@dimen/module_small"
             android:layout_marginTop="@dimen/module_small"
             android:layout_marginBottom="@dimen/module_small"
-            android:layout_marginStart="@dimen/module_small"
             android:background="@drawable/oss_media_cover_photo_indicator_background"
             android:gravity="center"
             android:includeFontPadding="false"
-            android:paddingStart="@dimen/module_tiny"
-            android:paddingLeft="@dimen/module_tiny"
-            android:paddingEnd="@dimen/module_tiny"
-            android:paddingRight="@dimen/module_tiny"
+            android:padding="4dp"
             android:text="Cover"
-            android:textSize="@dimen/caption_font_size"
+            android:textColor="@color/Neutral_White"
+            android:textSize="10sp"
             android:visibility="gone"
             tools:text="Hello"
             tools:visibility="visible" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/imgSelectedText"
             android:layout_width="@dimen/module_base_9"
             android:layout_height="@dimen/module_base_9"
-            android:layout_marginEnd="@dimen/module_small"
             android:layout_marginTop="@dimen/module_small"
+            android:layout_marginEnd="@dimen/module_small"
             android:layout_marginBottom="@dimen/module_small"
             android:background="@drawable/oss_circle_photo_indicator"
             android:gravity="center"
-            android:textColor="@android:color/white"
+            android:textColor="@color/Neutral_White"
             android:textSize="@dimen/label_font_size"
             tools:text="2" />
 

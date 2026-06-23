@@ -44,7 +44,7 @@ class MediaGalleryView(context: Context, attrs: AttributeSet?) :
     }
 
     fun updateDefaultText(id: Int) {
-        val tvDefaultText = findViewById<TextView>(R.id.tvDefaultText)
+        val tvDefaultText = findViewById<com.google.android.material.textview.MaterialTextView>(R.id.tvDefaultText)
         if (id != 0) {
             tvDefaultText.visibility = View.VISIBLE
             tvDefaultText.text = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
