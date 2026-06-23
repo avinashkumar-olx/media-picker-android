@@ -1,13 +1,16 @@
 package com.mediapicker.sample
 
 import android.content.Intent
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -47,7 +50,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        WindowCompat.getInsetsController(window, window.decorView).isAppearanceLightStatusBars = true
+        applyPrimarySystemBarColors()
         setContentView(activityMainBinding.root)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content)) { v, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.navigationBars())
@@ -61,6 +64,21 @@ class MainActivity : AppCompatActivity() {
         }
         setUpGallery()
         showStepFragment()
+    }
+
+    private fun applyPrimarySystemBarColors() {
+        val primaryColor = ContextCompat.getColor(this, R.color.Primary)
+        window.statusBarColor = primaryColor
+        window.navigationBarColor = primaryColor
+        window.setBackgroundDrawable(ColorDrawable(primaryColor))
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            window.isNavigationBarContrastEnforced = false
+        }
+
+        WindowCompat.getInsetsController(window, window.decorView).apply {
+            isAppearanceLightStatusBars = false
+            isAppearanceLightNavigationBars = false
+        }
     }
 
     private fun getValidation(): Validation {
