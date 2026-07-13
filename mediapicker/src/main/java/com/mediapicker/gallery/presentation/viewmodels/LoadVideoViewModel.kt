@@ -8,10 +8,10 @@ import android.net.Uri
 import android.provider.MediaStore
 import android.webkit.MimeTypeMap
 import androidx.lifecycle.MutableLiveData
-import androidx.loader.content.CursorLoader
 import androidx.loader.content.Loader
 import com.mediapicker.gallery.GalleryConfig
 import com.mediapicker.gallery.presentation.viewmodels.factory.BaseLoadMediaViewModel
+import com.mediapicker.gallery.presentation.viewmodels.factory.SafeCursorLoader
 import java.io.Serializable
 
 class LoadVideoViewModel(private val application: Application) :
@@ -45,7 +45,7 @@ class LoadVideoViewModel(private val application: Application) :
                 selection += folderCriteria.first
                 projection.add(folderCriteria.second)
             }
-            return CursorLoader(
+            return SafeCursorLoader(
                 it,
                 MediaStore.Video.Media.EXTERNAL_CONTENT_URI, null, selection,
                 projection.toTypedArray(), MediaStore.Images.Media.DATE_TAKEN + " DESC"
