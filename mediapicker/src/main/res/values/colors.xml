@@ -97,9 +97,4 @@
     <color name="Neutral_H1_Text_60">#99000000</color>
     <color name="NeutralWhite_40">#66ffffff</color>
 
-    <!-- DO NOT TOUCH PAYU SDK COLOR UNLESS DESIGN SYSTEM REVAMP IS NEEDED / SDK UPDATE -->
-    <color name="one_payu_colorPrimary">#004896</color>
-    <color name="one_payu_colorPrimaryDark">#004896</color>
-    <color name="one_payu_colorAccent">#0078FA</color>
-    <color name="one_payu_baseTextColor">@color/Neutral_White</color>
 </resources>
