@@ -2,6 +2,7 @@ package com.mediapicker.gallery.presentation.utils
 
 import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -20,8 +21,6 @@ import com.olx.permify.callback.PermissionRequestCallback
 import com.olx.permify.callback.RationalPermissionCallback
 
 object PermissionsUtil {
-
-    private const val REQUEST_CODE_PERMISSION = 1001
 
     private fun getRequiredPermissions(): Array<String> {
         return when {
@@ -48,11 +47,59 @@ object PermissionsUtil {
         }
     }
 
+    private fun getMediaPermissions(): List<String> {
+        return when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> listOf(
+                Manifest.permission.READ_MEDIA_IMAGES,
+                Manifest.permission.READ_MEDIA_VIDEO,
+                Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
+            )
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> listOf(
+                Manifest.permission.READ_MEDIA_IMAGES,
+                Manifest.permission.READ_MEDIA_VIDEO
+            )
+            else -> listOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
+    }
+
+    /** Full library access — enough to skip re-prompting and show the gallery. */
+    fun hasFullMediaAccess(context: Context): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            isGranted(context, Manifest.permission.READ_MEDIA_IMAGES) ||
+                isGranted(context, Manifest.permission.READ_MEDIA_VIDEO)
+        } else {
+            isGranted(context, Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
+    }
+
+    /**
+     * Any access that can load media (full or Android 14+ partial selection).
+     * Partial access still shows the upgrade banner via fragment [checkPermission].
+     */
+    fun hasMediaAccess(context: Context): Boolean {
+        if (hasFullMediaAccess(context)) return true
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE &&
+            isGranted(context, Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED)
+    }
+
+    private fun isGranted(context: Context, permission: String): Boolean {
+        return ContextCompat.checkSelfPermission(context, permission) ==
+            PackageManager.PERMISSION_GRANTED
+    }
+
     fun requestPermissions(
         fragment: Fragment,
         onAllPermissionsGranted: () -> Unit,
         onPermissionDenied: () -> Unit
     ) {
+        // Full access already granted: skip the request so we don't hit a no-op prompt
+        // and then fail to mount the gallery. Partial access still requests so the user
+        // can upgrade via the "Allow" banner.
+        if (hasFullMediaAccess(fragment.requireContext())) {
+            runAfterFragmentTransactions(fragment, onAllPermissionsGranted)
+            return
+        }
+
         val permissions = getRequiredPermissions()
         Permify.requestPermission(
             fragment = fragment,
@@ -71,15 +118,31 @@ object PermissionsUtil {
                     val grantedMap = permissions.associateWith { permission ->
                         grantedList.contains(permission)
                     }
-                    handlePermissionsResult(
-                        fragment.requireActivity(),
-                        grantedMap,
-                        onAllPermissionsGranted,
-                        onPermissionDenied
-                    )
+                    // Permify invokes this synchronously. A pending permission result is
+                    // replayed during Fragment.performResume, i.e. while FragmentManager is
+                    // still executing transactions, so callers that swap a ViewPager adapter
+                    // would crash with "FragmentManager is already executing transactions".
+                    // Deferring to the next main-loop message lets the transaction finish first.
+                    runAfterFragmentTransactions(fragment) {
+                        handlePermissionsResult(
+                            fragment.requireActivity(),
+                            grantedMap,
+                            onAllPermissionsGranted,
+                            onPermissionDenied
+                        )
+                    }
                 }
             }
         )
+    }
+
+    private fun runAfterFragmentTransactions(fragment: Fragment, action: () -> Unit) {
+        val runner = Runnable {
+            if (fragment.isAdded) action()
+        }
+        fragment.view?.post(runner)
+            ?: fragment.activity?.window?.decorView?.post(runner)
+            ?: runner.run()
     }
 
     fun handlePermissionsResult(
@@ -88,25 +151,13 @@ object PermissionsUtil {
         onAllPermissionsGranted: () -> Unit,
         onPermissionDenied: () -> Unit
     ) {
-        val allPermissionsGranted = granted.all { it.value }
-        // Special case for Android 14 (API level 34) and newer
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            val isReadMediaVisualUserSelectedGranted = ContextCompat.checkSelfPermission(
-                activity,
-                Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
-            ) == PackageManager.PERMISSION_GRANTED
-
-            if (isReadMediaVisualUserSelectedGranted) {
-                onAllPermissionsGranted()
-            } else {
-                handleDeniedPermissions(activity, granted, onPermissionDenied)
-            }
+        // Gallery needs media access only. Full (READ_MEDIA_*) or partial
+        // (READ_MEDIA_VISUAL_USER_SELECTED) both count — do not require CAMERA or
+        // treat partial-only as failure when full access was granted.
+        if (hasMediaAccess(activity)) {
+            onAllPermissionsGranted()
         } else {
-            if (allPermissionsGranted) {
-                onAllPermissionsGranted()
-            } else {
-                handleDeniedPermissions(activity, granted, onPermissionDenied)
-            }
+            handleDeniedPermissions(activity, granted, onPermissionDenied)
         }
     }
 
@@ -115,9 +166,12 @@ object PermissionsUtil {
         granted: Map<String, Boolean>,
         onPermissionDenied: () -> Unit
     ) {
-        val deniedPermissions = granted.filter { !it.value }.keys
+        val mediaPermissions = getMediaPermissions()
+        val deniedMediaPermissions = granted
+            .filter { !it.value && it.key in mediaPermissions }
+            .keys
 
-        deniedPermissions.forEach { permission ->
+        deniedMediaPermissions.forEach { permission ->
             if (!ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)) {
                 showNeverAskAgainPermission(activity)
                 return

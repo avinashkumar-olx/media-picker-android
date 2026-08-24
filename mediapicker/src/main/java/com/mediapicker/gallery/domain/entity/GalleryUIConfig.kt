@@ -5,7 +5,7 @@ import androidx.annotation.DrawableRes
 import com.mediapicker.gallery.R
 
 data class GalleryUIConfig(
-    @ColorRes val tileColor: Int = R.color.primary,
+    @ColorRes val tileColor: Int = R.color.Primary,
     @DrawableRes val cameraIcon: Int = R.drawable.oss_media_ic_camera,
     @DrawableRes val folderIcon: Int = R.drawable.oss_media_ic_folder_icon,
     @DrawableRes val backIcon: Int = R.drawable.oss_media_ic_back

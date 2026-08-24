@@ -83,7 +83,7 @@ abstract class BaseFragment : Fragment() {
             ossFragmentBaseBinding?.ossCustomTool?.toolbarTitle?.setTextColor(
                 ContextCompat.getColor(
                     it,
-                    R.color.oss_toolbar_text
+                    R.color.Neutral_H1_Text
                 )
             )
         }

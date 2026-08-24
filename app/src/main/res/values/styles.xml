@@ -3,20 +3,20 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.Material3.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/primary</item>
+        <item name="colorPrimary">@color/Primary</item>
+        <item name="colorPrimaryDark">@color/PrimaryDark5</item>
+        <item name="colorAccent">@color/Tertiary</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-        <item name="tabLayoutIndicator">@color/colorPrimary</item>
+        <item name="tabLayoutIndicator">@color/Primary</item>
     </style>
 
-    <style name="CustomButton" parent="@style/Widget.Material3.Button">
+    <style name="CustomButton" parent="@style/Widget.Material3.Button.TextButton">
         <item name="android:background">@drawable/oss_button_selector_state</item>
         <item name="android:foreground">?selectableItemBackground</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:textSize">@dimen/subtitle_font_size</item>
-        <item name="android:textColor">@color/textColorPrimary</item>
+        <item name="android:textColor">@color/Neutral_H1_Text</item>
         <item name="android:includeFontPadding">false</item>
         <item name="android:paddingLeft">@dimen/module_medium</item>
         <item name="android:paddingRight">@dimen/module_medium</item>

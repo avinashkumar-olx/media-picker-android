@@ -4,11 +4,11 @@
     android:id="@+id/gridTile"
     android:layout_width="match_parent"
     android:layout_height="104dp"
-    android:background="@color/primary"
+    android:background="@color/Primary"
     android:orientation="vertical"
     android:padding="0.5dp">
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/img"
         android:layout_width="32dp"
         android:layout_height="32dp"
@@ -20,9 +20,9 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
         app:srcCompat="@drawable/oss_media_ic_camera"
-        app:tint="#FFFFFF" />
+        app:tint="@color/Neutral_White" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/folderName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -34,4 +34,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/img" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
