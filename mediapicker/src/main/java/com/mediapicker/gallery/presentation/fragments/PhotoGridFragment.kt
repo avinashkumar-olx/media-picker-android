@@ -22,7 +22,7 @@ import com.mediapicker.gallery.presentation.utils.Constants.EXTRA_SELECTED_PHOTO
 import com.mediapicker.gallery.presentation.utils.FileUtils
 import com.mediapicker.gallery.presentation.utils.ValidatePhotos
 import com.mediapicker.gallery.presentation.viewmodels.LoadPhotoViewModel
-import java.io.Serializable
+import androidx.core.content.IntentCompat
 
 private const val TAKING_PHOTO = 9999
 
@@ -35,9 +35,9 @@ open class PhotoGridFragment : BaseViewPagerItemFragment() {
             PhotoGridFragment().also {
                 it.pageTitle = title
                 it.arguments = Bundle().apply {
-                    putSerializable(
+                    putParcelableArrayList(
                         EXTRA_SELECTED_PHOTOS,
-                        listOfSelectedPhotos as Serializable
+                        ArrayList(listOfSelectedPhotos)
                     )
                 }
             }
@@ -78,10 +78,13 @@ open class PhotoGridFragment : BaseViewPagerItemFragment() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 val data = result.data
-                val finalSelectionFromFolders =
-                    data?.getSerializableExtra(EXTRA_SELECTED_PHOTO) as? LinkedHashSet<PhotoFile>
+                val finalSelectionFromFolders = data?.let {
+                    IntentCompat.getParcelableArrayListExtra(
+                        it, EXTRA_SELECTED_PHOTO, PhotoFile::class.java
+                    )
+                }
                 finalSelectionFromFolders?.let {
-                    setSelectedFromFolderAndNotify(it)
+                    setSelectedFromFolderAndNotify(LinkedHashSet(it))
                 }
             }
         }
@@ -131,7 +134,7 @@ open class PhotoGridFragment : BaseViewPagerItemFragment() {
             //trackingService.postingFolderSelect()
             bridgeViewModel.onFolderSelect()
             val intent = Intent(requireContext(), FolderViewActivity::class.java).apply {
-                putExtra(EXTRA_SELECTED_PHOTO, currentSelectedPhotos)
+                putParcelableArrayListExtra(EXTRA_SELECTED_PHOTO, ArrayList(currentSelectedPhotos))
             }
             photoSelectionLauncher.launch(intent)
         }

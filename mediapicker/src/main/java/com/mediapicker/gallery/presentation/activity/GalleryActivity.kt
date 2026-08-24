@@ -9,12 +9,12 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
+import androidx.core.os.BundleCompat
 import com.mediapicker.gallery.domain.entity.PhotoFile
 import com.mediapicker.gallery.presentation.fragments.BaseFragment
 import com.mediapicker.gallery.presentation.fragments.HomeFragment
 import com.mediapicker.gallery.presentation.utils.DefaultPage
 import com.mediapicker.gallery.presentation.viewmodels.VideoFile
-import java.io.Serializable
 
 class GalleryActivity : BaseFragmentActivity() {
 
@@ -27,15 +27,15 @@ class GalleryActivity : BaseFragmentActivity() {
         ): Intent {
             return Intent(context, GalleryActivity::class.java).apply {
                 putExtras(Bundle().apply {
-                    this.putSerializable(
+                    this.putParcelableArrayList(
                         BaseFragment.EXTRA_SELECTED_PHOTOS,
-                        listOfSelectedPhotos as Serializable
+                        ArrayList(listOfSelectedPhotos)
                     )
-                    this.putSerializable(
+                    this.putParcelableArrayList(
                         BaseFragment.EXTRA_SELECTED_VIDEOS,
-                        listOfSelectedVideos as Serializable
+                        ArrayList(listOfSelectedVideos)
                     )
-                    this.putSerializable(BaseFragment.EXTRA_DEFAULT_PAGE, defaultPageType)
+                    this.putParcelable(BaseFragment.EXTRA_DEFAULT_PAGE, defaultPageType)
                 })
             }
         }
@@ -64,16 +64,23 @@ class GalleryActivity : BaseFragmentActivity() {
     }
 
     private fun getSelectedPhotos(): List<PhotoFile> {
-        val list = intent.extras?.getSerializable(BaseFragment.EXTRA_SELECTED_PHOTOS) as List<*>
-        return list.filterIsInstance<PhotoFile>()
+        val extras = intent.extras ?: return emptyList()
+        return BundleCompat.getParcelableArrayList(
+            extras, BaseFragment.EXTRA_SELECTED_PHOTOS, PhotoFile::class.java
+        ) ?: emptyList()
     }
 
     private fun getSelectedVideos(): List<VideoFile> {
-        val list = intent.extras?.getSerializable(BaseFragment.EXTRA_SELECTED_PHOTOS) as List<*>
-        return list.filterIsInstance<VideoFile>()
+        val extras = intent.extras ?: return emptyList()
+        return BundleCompat.getParcelableArrayList(
+            extras, BaseFragment.EXTRA_SELECTED_VIDEOS, VideoFile::class.java
+        ) ?: emptyList()
     }
 
     private fun getDefaultPage(): DefaultPage {
-        return intent.extras?.getSerializable(BaseFragment.EXTRA_DEFAULT_PAGE) as DefaultPage
+        val extras = intent.extras ?: return DefaultPage.PhotoPage
+        return BundleCompat.getParcelable(
+            extras, BaseFragment.EXTRA_DEFAULT_PAGE, DefaultPage::class.java
+        ) ?: DefaultPage.PhotoPage
     }
 }

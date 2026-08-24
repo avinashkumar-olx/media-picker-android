@@ -1,14 +1,14 @@
 package com.mediapicker.gallery.domain.entity
 
-import java.io.Serializable
-import java.util.ArrayList
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
-class CameraItem : IGalleryItem, Serializable {
-
-    var name = "Camera"
-    var albumId: String? = "-1"
+@Parcelize
+class CameraItem(
+    var name: String = "Camera",
+    var albumId: String? = "-1",
     var albumEntries: List<PhotoFile> = ArrayList()
-
+) : IGalleryItem, Parcelable {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

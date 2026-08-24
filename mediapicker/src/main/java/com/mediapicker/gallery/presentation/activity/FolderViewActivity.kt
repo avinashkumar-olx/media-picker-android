@@ -9,6 +9,8 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
+import androidx.core.content.IntentCompat
+import androidx.core.os.BundleCompat
 import androidx.fragment.app.Fragment
 import com.mediapicker.gallery.domain.entity.PhotoAlbum
 import com.mediapicker.gallery.domain.entity.PhotoFile
@@ -27,9 +29,20 @@ class FolderViewActivity : BaseFragmentActivity(), GalleryActionListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         applyEdgeToEdgePadding()
-        setCurrentSelectedPhotos()
-        setFragment(FolderViewFragment.getInstance())
+        setCurrentSelectedPhotos(savedInstanceState)
+        if (savedInstanceState == null) {
+            setFragment(FolderViewFragment.getInstance())
+        }
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+    }
+
+    /**
+     * The selection lives here rather than in fragment arguments so there is a single source of
+     * truth, and so the saved state stays bounded — it is capped by the gallery's max photo count.
+     */
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putParcelableArrayList(EXTRA_SELECTED_PHOTO, ArrayList(currentSelectedPhotos))
     }
 
     private fun applyEdgeToEdgePadding() {
@@ -46,13 +59,28 @@ class FolderViewActivity : BaseFragmentActivity(), GalleryActionListener {
         }
     }
 
-    private fun setCurrentSelectedPhotos() {
-        currentSelectedPhotos =
-            intent.getSerializableExtra(EXTRA_SELECTED_PHOTO) as LinkedHashSet<PhotoFile>
+    private fun setCurrentSelectedPhotos(savedInstanceState: Bundle?) {
+        val photos = if (savedInstanceState != null) {
+            BundleCompat.getParcelableArrayList(
+                savedInstanceState, EXTRA_SELECTED_PHOTO, PhotoFile::class.java
+            )
+        } else {
+            IntentCompat.getParcelableArrayListExtra(
+                intent, EXTRA_SELECTED_PHOTO, PhotoFile::class.java
+            )
+        } ?: emptyList<PhotoFile>()
+        currentSelectedPhotos = LinkedHashSet(photos)
     }
 
+    override fun getCurrentSelectedPhotos() = currentSelectedPhotos
+
     override fun moveToPhotoGrid(photoAlbum: PhotoAlbum) {
-        setFragment(GalleryPhotoViewFragment.getInstance(photoAlbum, currentSelectedPhotos))
+        setFragment(
+            GalleryPhotoViewFragment.getInstance(
+                albumId = photoAlbum.albumId.orEmpty(),
+                albumName = photoAlbum.name.orEmpty()
+            )
+        )
     }
 
     override fun onPhotoSelected(postingDraftPhoto: PhotoFile) {
@@ -75,7 +103,12 @@ class FolderViewActivity : BaseFragmentActivity(), GalleryActionListener {
         if (shouldThrowResult) {
             setResult(
                 Activity.RESULT_OK,
-                Intent().apply { this.putExtra(EXTRA_SELECTED_PHOTO, currentSelectedPhotos) })
+                Intent().apply {
+                    this.putParcelableArrayListExtra(
+                        EXTRA_SELECTED_PHOTO,
+                        ArrayList(currentSelectedPhotos)
+                    )
+                })
             finish()
         } else {
             onBackPressedDispatcher.onBackPressed()
@@ -113,6 +146,10 @@ class FolderViewActivity : BaseFragmentActivity(), GalleryActionListener {
 
 interface GalleryActionListener {
     fun moveToPhotoGrid(photoAlbum: PhotoAlbum)
+
+    /** The live selection owned by the host, shared with child fragments by reference. */
+    fun getCurrentSelectedPhotos(): LinkedHashSet<PhotoFile>
+
     fun onPhotoSelected(postingDraftPhoto: PhotoFile)
     fun onActionClicked(shouldThrowResult: Boolean)
     fun isPhotoAlreadySelected(postingDraftPhoto: PhotoFile): Boolean

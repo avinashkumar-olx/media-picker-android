@@ -1,3 +1,5 @@
 package com.mediapicker.gallery.domain.entity
 
-interface IGalleryItem
+import android.os.Parcelable
+
+interface IGalleryItem : Parcelable

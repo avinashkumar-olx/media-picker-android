@@ -8,11 +8,13 @@ import android.net.Uri
 import android.provider.MediaStore
 import android.webkit.MimeTypeMap
 import androidx.lifecycle.MutableLiveData
-import androidx.loader.content.CursorLoader
 import androidx.loader.content.Loader
 import com.mediapicker.gallery.GalleryConfig
 import com.mediapicker.gallery.presentation.viewmodels.factory.BaseLoadMediaViewModel
-import java.io.Serializable
+import com.mediapicker.gallery.presentation.viewmodels.factory.SafeCursorLoader
+import android.os.Parcelable
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 
 class LoadVideoViewModel(private val application: Application) :
     BaseLoadMediaViewModel(application) {
@@ -45,7 +47,7 @@ class LoadVideoViewModel(private val application: Application) :
                 selection += folderCriteria.first
                 projection.add(folderCriteria.second)
             }
-            return CursorLoader(
+            return SafeCursorLoader(
                 it,
                 MediaStore.Video.Media.EXTERNAL_CONTENT_URI, null, selection,
                 projection.toTypedArray(), MediaStore.Images.Media.DATE_TAKEN + " DESC"
@@ -65,7 +67,7 @@ class LoadVideoViewModel(private val application: Application) :
         val sizeColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.SIZE)
 
         videoList.add(RecordVideoItem())
-        if (cursor.moveToFirst()) {
+        if (!cursor.isClosed && cursor.moveToFirst()) {
             do {
                 val id = cursor.getLong(idColumn)
                 val name = cursor.getString(nameColumn)
@@ -79,7 +81,7 @@ class LoadVideoViewModel(private val application: Application) :
                 )
                 if (!name.isNullOrBlank() && duration > 0)
                     videoList += VideoFile(id, contentUri, name, duration, size, thumbnail)
-            } while (cursor.moveToNext())
+            } while (!cursor.isClosed && cursor.moveToNext())
         }
         loadingStateLiveData.postValue(StateData.SUCCESS)
         videoItemLiveData.postValue(videoList)
@@ -88,12 +90,18 @@ class LoadVideoViewModel(private val application: Application) :
 
 interface VideoItem
 
+@Parcelize
 data class VideoFile(
-    val id: Long, @Transient val uri: Uri, val name: String, val duration: Int, val size: Int,
-    @Transient val thumbnail: Bitmap?
-) : VideoItem,
-    Serializable {
+    val id: Long,
+    @IgnoredOnParcel val uri: Uri? = null,
+    val name: String,
+    val duration: Int,
+    val size: Int,
+    @IgnoredOnParcel val thumbnail: Bitmap? = null
+) : VideoItem, Parcelable {
 
+    /** Derived selection state; recomputed by SelectVideoAdapter, so it is not parcelled. */
+    @IgnoredOnParcel
     var isSelected: Boolean = false
 
     fun getFormattedDuration(): String {

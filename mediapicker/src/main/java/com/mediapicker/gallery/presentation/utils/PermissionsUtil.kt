@@ -8,23 +8,23 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.mediapicker.gallery.R
+import com.olx.permify.Permify
+import com.olx.permify.callback.PermissionRequestCallback
+import com.olx.permify.callback.RationalPermissionCallback
 
 object PermissionsUtil {
 
     private const val REQUEST_CODE_PERMISSION = 1001
 
-    fun requestPermissions(
-        activity: FragmentActivity,
-        permissionLauncher: ActivityResultLauncher<Array<String>>
-    ) {
-        val permissions = when {
+    private fun getRequiredPermissions(): Array<String> {
+        return when {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> arrayOf(
                 Manifest.permission.CAMERA,
                 Manifest.permission.READ_MEDIA_IMAGES,
@@ -46,7 +46,40 @@ object PermissionsUtil {
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
             )
         }
-        permissionLauncher.launch(permissions)
+    }
+
+    fun requestPermissions(
+        fragment: Fragment,
+        onAllPermissionsGranted: () -> Unit,
+        onPermissionDenied: () -> Unit
+    ) {
+        val permissions = getRequiredPermissions()
+        Permify.requestPermission(
+            fragment = fragment,
+            permissions = permissions.toList(),
+            showDialogs = false,
+            rationalPermissionCallback = object : RationalPermissionCallback {
+                override fun onRationalPermissionCallback(temporaryPermissionDenied: List<String>) {
+                }
+            },
+            permissionRequestCallback = object : PermissionRequestCallback {
+                override fun onResult(
+                    allGranted: Boolean,
+                    grantedList: List<String>,
+                    deniedList: List<String>
+                ) {
+                    val grantedMap = permissions.associateWith { permission ->
+                        grantedList.contains(permission)
+                    }
+                    handlePermissionsResult(
+                        fragment.requireActivity(),
+                        grantedMap,
+                        onAllPermissionsGranted,
+                        onPermissionDenied
+                    )
+                }
+            }
+        )
     }
 
     fun handlePermissionsResult(

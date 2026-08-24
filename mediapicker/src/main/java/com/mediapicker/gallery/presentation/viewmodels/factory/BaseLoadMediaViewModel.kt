@@ -35,8 +35,10 @@ abstract class BaseLoadMediaViewModel(application: Application) : AndroidViewMod
 
     override fun onLoadFinished(loader: Loader<Cursor>, data: Cursor?) {
         Executors.newSingleThreadExecutor().submit {
-            data?.let {
-                prepareDataForAdapterAndPost(it)
+            if (data == null) {
+                loadingStateLiveData.postValue(StateData.SUCCESS)
+            } else {
+                prepareDataForAdapterAndPost(data)
                 loadingStateLiveData.postValue(StateData.SUCCESS)
             }
         }

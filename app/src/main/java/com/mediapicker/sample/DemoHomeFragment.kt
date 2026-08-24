@@ -5,7 +5,6 @@ import com.mediapicker.gallery.domain.entity.PhotoFile
 import com.mediapicker.gallery.presentation.fragments.HomeFragment
 import com.mediapicker.gallery.presentation.utils.DefaultPage
 import com.mediapicker.gallery.presentation.viewmodels.VideoFile
-import java.io.Serializable
 
 class DemoHomeFragment : HomeFragment() {
 
@@ -25,9 +24,9 @@ class DemoHomeFragment : HomeFragment() {
         ): DemoHomeFragment {
             return DemoHomeFragment().apply {
                 this.arguments = Bundle().apply {
-                    putSerializable(EXTRA_SELECTED_PHOTOS, listOfSelectedPhotos as Serializable)
-                    putSerializable(EXTRA_SELECTED_VIDEOS, listOfSelectedVideos as Serializable)
-                    putSerializable(EXTRA_DEFAULT_PAGE, defaultPageType)
+                    putParcelableArrayList(EXTRA_SELECTED_PHOTOS, ArrayList(listOfSelectedPhotos))
+                    putParcelableArrayList(EXTRA_SELECTED_VIDEOS, ArrayList(listOfSelectedVideos))
+                    putParcelable(EXTRA_DEFAULT_PAGE, defaultPageType)
                 }
             }
         }
