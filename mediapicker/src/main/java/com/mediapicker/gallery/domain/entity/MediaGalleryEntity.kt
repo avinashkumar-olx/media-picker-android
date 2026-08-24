@@ -1,6 +1,13 @@
 package com.mediapicker.gallery.domain.entity
 
-import java.io.Serializable
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
-data class MediaGalleryEntity(val fileName: String?, val mediaId: Long?, val path: String?, val isLocalImage: Boolean = false, val mediaType: GalleryViewMediaType) : Serializable
-
+@Parcelize
+data class MediaGalleryEntity(
+    val fileName: String?,
+    val mediaId: Long?,
+    val path: String?,
+    val isLocalImage: Boolean = false,
+    val mediaType: GalleryViewMediaType
+) : Parcelable

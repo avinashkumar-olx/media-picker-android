@@ -5,9 +5,9 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.os.BundleCompat
 import com.google.android.material.snackbar.Snackbar
 import com.mediapicker.gallery.Gallery
 import com.mediapicker.gallery.GalleryConfig
@@ -24,19 +24,8 @@ import com.mediapicker.gallery.presentation.viewmodels.BridgeViewModel
 import com.mediapicker.gallery.presentation.viewmodels.HomeViewModel
 import com.mediapicker.gallery.presentation.viewmodels.VideoFile
 import com.mediapicker.gallery.utils.SnackbarUtils
-import java.io.Serializable
 
 open class HomeFragment : BaseFragment() {
-    private var permissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { granted ->
-            PermissionsUtil.handlePermissionsResult(
-                requireActivity(),
-                granted,
-                onAllPermissionsGranted = { checkPermissions() },
-                onPermissionDenied = { onPermissionDenied() }
-            )
-        }
-
     private val homeViewModel: HomeViewModel by lazy {
         getFragmentScopedViewModel { HomeViewModel(Gallery.galleryConfig) }
     }
@@ -200,7 +189,8 @@ open class HomeFragment : BaseFragment() {
     private fun getPageFromArguments(): DefaultPage {
         this.arguments?.let {
             if (it.containsKey(EXTRA_DEFAULT_PAGE)) {
-                return it.getSerializable(EXTRA_DEFAULT_PAGE) as DefaultPage
+                return BundleCompat.getParcelable(it, EXTRA_DEFAULT_PAGE, DefaultPage::class.java)
+                    ?: DefaultPage.PhotoPage
             }
         }
         return DefaultPage.PhotoPage
@@ -211,7 +201,11 @@ open class HomeFragment : BaseFragment() {
     }
 
     private fun requestPermissions() {
-        PermissionsUtil.requestPermissions(requireActivity(), permissionLauncher)
+        PermissionsUtil.requestPermissions(
+            fragment = this,
+            onAllPermissionsGranted = { checkPermissions() },
+            onPermissionDenied = { onPermissionDenied() }
+        )
     }
 
     private fun checkPermission() {
@@ -261,9 +255,9 @@ open class HomeFragment : BaseFragment() {
         ): HomeFragment {
             return HomeFragment().apply {
                 this.arguments = Bundle().apply {
-                    putSerializable(EXTRA_SELECTED_PHOTOS, listOfSelectedPhotos as Serializable)
-                    putSerializable(EXTRA_SELECTED_VIDEOS, listOfSelectedVideos as Serializable)
-                    putSerializable(EXTRA_DEFAULT_PAGE, defaultPageType)
+                    putParcelableArrayList(EXTRA_SELECTED_PHOTOS, ArrayList(listOfSelectedPhotos))
+                    putParcelableArrayList(EXTRA_SELECTED_VIDEOS, ArrayList(listOfSelectedVideos))
+                    putParcelable(EXTRA_DEFAULT_PAGE, defaultPageType)
                 }
             }
         }

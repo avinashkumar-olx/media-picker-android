@@ -12,7 +12,9 @@ import androidx.loader.content.Loader
 import com.mediapicker.gallery.GalleryConfig
 import com.mediapicker.gallery.presentation.viewmodels.factory.BaseLoadMediaViewModel
 import com.mediapicker.gallery.presentation.viewmodels.factory.SafeCursorLoader
-import java.io.Serializable
+import android.os.Parcelable
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 
 class LoadVideoViewModel(private val application: Application) :
     BaseLoadMediaViewModel(application) {
@@ -88,12 +90,18 @@ class LoadVideoViewModel(private val application: Application) :
 
 interface VideoItem
 
+@Parcelize
 data class VideoFile(
-    val id: Long, @Transient val uri: Uri, val name: String, val duration: Int, val size: Int,
-    @Transient val thumbnail: Bitmap?
-) : VideoItem,
-    Serializable {
+    val id: Long,
+    @IgnoredOnParcel val uri: Uri? = null,
+    val name: String,
+    val duration: Int,
+    val size: Int,
+    @IgnoredOnParcel val thumbnail: Bitmap? = null
+) : VideoItem, Parcelable {
 
+    /** Derived selection state; recomputed by SelectVideoAdapter, so it is not parcelled. */
+    @IgnoredOnParcel
     var isSelected: Boolean = false
 
     fun getFormattedDuration(): String {

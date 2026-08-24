@@ -10,7 +10,6 @@ import com.mediapicker.gallery.presentation.adapters.SelectVideoAdapter
 import com.mediapicker.gallery.presentation.viewmodels.LoadVideoViewModel
 import com.mediapicker.gallery.presentation.viewmodels.VideoFile
 import com.mediapicker.gallery.presentation.viewmodels.VideoItem
-import java.io.Serializable
 
 class VideoGridFragment : BaseViewPagerItemFragment(), OnItemClickListener {
 
@@ -19,9 +18,9 @@ class VideoGridFragment : BaseViewPagerItemFragment(), OnItemClickListener {
             VideoGridFragment().apply {
                 this.pageTitle = title
                 this.arguments = Bundle().apply {
-                    putSerializable(
+                    putParcelableArrayList(
                         EXTRA_SELECTED_VIDEOS,
-                        listOfSelectedVideos as Serializable
+                        ArrayList(listOfSelectedVideos)
                     )
                 }
             }

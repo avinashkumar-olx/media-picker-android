@@ -1,9 +1,12 @@
 package com.mediapicker.gallery.presentation.utils
 
-import java.io.Serializable
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
-
-sealed class DefaultPage : Serializable {
+sealed class DefaultPage : Parcelable {
+    @Parcelize
     data object PhotoPage : DefaultPage()
+
+    @Parcelize
     data object VideoPage : DefaultPage()
 }

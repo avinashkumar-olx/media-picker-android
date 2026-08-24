@@ -11,6 +11,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
+import androidx.core.content.IntentCompat
 import androidx.fragment.app.Fragment
 import com.mediapicker.gallery.Gallery
 import com.mediapicker.gallery.R
@@ -37,7 +38,7 @@ class MediaGalleryActivity : AppCompatActivity(), View.OnClickListener,
             pageSource: String
         ): Intent {
             return Intent( fragment.activity, MediaGalleryActivity::class.java).apply {
-                putExtra(GALLERY_MEDIA_LIST, mediaGalleryList)
+                putParcelableArrayListExtra(GALLERY_MEDIA_LIST, mediaGalleryList)
                 putExtra(GALLERY_MEDIA_INDEX, mediaIndex)
                 putExtra(MEDIA_GALLERY_SOURCE, pageSource)
             }
@@ -63,8 +64,9 @@ class MediaGalleryActivity : AppCompatActivity(), View.OnClickListener,
             WindowInsetsCompat.CONSUMED
         }
         if (intent != null) {
-            mediaGalleryList =
-                intent.extras?.getSerializable(GALLERY_MEDIA_LIST) as ArrayList<MediaGalleryEntity>
+            mediaGalleryList = IntentCompat.getParcelableArrayListExtra(
+                intent, GALLERY_MEDIA_LIST, MediaGalleryEntity::class.java
+            ) ?: mutableListOf()
             selectedPhotoIndex =
                 if (intent.extras?.containsKey(GALLERY_MEDIA_INDEX)!!) intent.extras!!.getInt(
                     GALLERY_MEDIA_INDEX

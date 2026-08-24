@@ -7,33 +7,61 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.mediapicker.gallery.Gallery
 import com.mediapicker.gallery.R
+import com.mediapicker.gallery.data.repositories.GalleryService
 import com.mediapicker.gallery.databinding.OssFragmentFolderViewBinding
-import com.mediapicker.gallery.domain.entity.PhotoAlbum
 import com.mediapicker.gallery.domain.entity.PhotoFile
 import com.mediapicker.gallery.presentation.adapters.IGalleryItemClickListener
 import com.mediapicker.gallery.presentation.adapters.SelectPhotoImageAdapter
-import com.mediapicker.gallery.presentation.utils.Constants.EXTRA_SELECTED_ALBUM
-import com.mediapicker.gallery.presentation.utils.Constants.EXTRA_SELECTED_PHOTO
+import com.mediapicker.gallery.presentation.utils.Constants.EXTRA_SELECTED_ALBUM_ID
+import com.mediapicker.gallery.presentation.utils.Constants.EXTRA_SELECTED_ALBUM_NAME
 import com.mediapicker.gallery.presentation.utils.ItemDecorationAlbumColumns
 import com.mediapicker.gallery.presentation.utils.ValidatePhotos
 import com.mediapicker.gallery.presentation.utils.ValidationResult
+import com.mediapicker.gallery.presentation.utils.getFragmentScopedViewModel
+import com.mediapicker.gallery.presentation.viewmodels.LoadAlbumViewModel
 import com.mediapicker.gallery.utils.SnackbarUtils
 
 const val COLUMNS_COUNT = 3
 
 class GalleryPhotoViewFragment : BaseGalleryViewFragment() {
 
-    lateinit var adapter: SelectPhotoImageAdapter
+    /**
+     * Lazy so it is safe to touch from either [initViewModels] or [setUpViews] — the album
+     * photos arrive asynchronously and may land before the views are set up.
+     */
+    val adapter: SelectPhotoImageAdapter by lazy {
+        SelectPhotoImageAdapter(
+            emptyList(),
+            currentSelectedPhotos.toList(),
+            galleryItemClickListener,
+            fromGallery = false
+        )
+    }
 
     private var photoValidationAction: ValidatePhotos = ValidatePhotos()
 
-    private val photoAlbum: PhotoAlbum by lazy {
-        arguments?.getSerializable(EXTRA_SELECTED_ALBUM) as PhotoAlbum
+    private val loadAlbumViewModel: LoadAlbumViewModel? by lazy {
+        context?.contentResolver?.let { contentResolver ->
+            getFragmentScopedViewModel {
+                LoadAlbumViewModel(GalleryService(contentResolver))
+            }
+        }
     }
 
-    private val currentSelectedPhotos: LinkedHashSet<PhotoFile> by lazy {
-        arguments?.getSerializable(EXTRA_SELECTED_PHOTO) as LinkedHashSet<PhotoFile>
+    private val albumId: String by lazy {
+        requireArguments().getString(EXTRA_SELECTED_ALBUM_ID).orEmpty()
     }
+
+    private val albumName: String by lazy {
+        requireArguments().getString(EXTRA_SELECTED_ALBUM_NAME).orEmpty()
+    }
+
+    /**
+     * The activity owns the selection; this is the same set instance, not a copy, so adds and
+     * removes made here stay in sync with the result the activity returns.
+     */
+    private val currentSelectedPhotos: LinkedHashSet<PhotoFile>
+        get() = galleryActionListener?.getCurrentSelectedPhotos() ?: LinkedHashSet()
 
     private val ossFragmentFolderView: OssFragmentFolderViewBinding? by lazy {
         ossFragmentBaseBinding?.baseContainer?.findViewById<LinearLayout>(R.id.linear_layout_parent)
@@ -43,6 +71,10 @@ class GalleryPhotoViewFragment : BaseGalleryViewFragment() {
     private fun removePhotoFromSelection(photo: PhotoFile) {
         currentSelectedPhotos.removePhoto(photo)
         Gallery.carousalActionListener?.onItemClicked(photo, false)
+        refreshSelection()
+    }
+
+    private fun refreshSelection() {
         adapter.listCurrentPhotos = currentSelectedPhotos.toList()
         adapter.notifyDataSetChanged()
     }
@@ -51,21 +83,23 @@ class GalleryPhotoViewFragment : BaseGalleryViewFragment() {
         SnackbarUtils.show(view, msg, Snackbar.LENGTH_SHORT)
     }
 
-    override fun getScreenTitle() = photoAlbum.name ?: ""
+    override fun getScreenTitle() = albumName
 
     override fun getLayoutId() = R.layout.oss_fragment_folder_view
 
+    override fun initViewModels() {
+        super.initViewModels()
+        loadAlbumViewModel?.getAlbumPhotos()?.observe(this) { setAlbumPhotos(it) }
+        loadAlbumViewModel?.loadAlbumPhotos(albumId)
+    }
+
+    private fun setAlbumPhotos(photos: List<PhotoFile>) {
+        adapter.listCurrentPhotos = currentSelectedPhotos.toList()
+        adapter.updateGalleryItems(photos)
+    }
+
     override fun setUpViews() {
         ossFragmentFolderView?.actionButton?.setOnClickListener { onActionButtonClick() }
-
-        photoAlbum.let { album ->
-            adapter = SelectPhotoImageAdapter(
-                album.getAlbumEntries(),
-                currentSelectedPhotos.toList(),
-                galleryItemClickListener,
-                fromGallery = false
-            )
-        }
 
         ossFragmentFolderView?.folderRV?.apply {
             this.addItemDecoration(
@@ -87,11 +121,6 @@ class GalleryPhotoViewFragment : BaseGalleryViewFragment() {
         ossFragmentBaseBinding?.ossCustomTool?.toolbarTitle?.isAllCaps =
             Gallery.galleryConfig?.textAllCaps == true
         ossFragmentFolderView?.actionButton?.isAllCaps = Gallery.galleryConfig?.textAllCaps == true
-
-//        baseBinding.customToolbar.apply {
-//            toolbarTitle.isAllCaps = Gallery.galleryConfig.textAllCaps
-//            toolbarTitle.gravity = Gallery.galleryConfig.galleryLabels.titleAlignment
-//        }
     }
 
     @SuppressLint("CheckResult")
@@ -109,8 +138,7 @@ class GalleryPhotoViewFragment : BaseGalleryViewFragment() {
             is ValidationResult.Success -> {
                 galleryActionListener?.onPhotoSelected(photo)
                 Gallery.carousalActionListener?.onItemClicked(photo, true)
-                adapter.listCurrentPhotos = currentSelectedPhotos.toList()
-                adapter.notifyDataSetChanged()
+                refreshSelection()
             }
 
             is ValidationResult.Failure -> {
@@ -141,14 +169,18 @@ class GalleryPhotoViewFragment : BaseGalleryViewFragment() {
     }
 
     companion object {
-        fun getInstance(
-            photoAlbum: PhotoAlbum,
-            currentSelectedPhotos: java.util.LinkedHashSet<PhotoFile>
-        ) = GalleryPhotoViewFragment().apply {
-            arguments = Bundle().apply {
-                this.putSerializable(EXTRA_SELECTED_ALBUM, photoAlbum)
-                this.putSerializable(EXTRA_SELECTED_PHOTO, currentSelectedPhotos)
+        /**
+         * Only the album identity travels in the arguments. Passing the album itself put every
+         * photo of the bucket into the saved-state parcel, which blew past the 1MB binder limit
+         * on large folders (TransactionTooLargeException). Entries are re-queried from
+         * MediaStore instead.
+         */
+        fun getInstance(albumId: String, albumName: String) =
+            GalleryPhotoViewFragment().apply {
+                arguments = Bundle().apply {
+                    putString(EXTRA_SELECTED_ALBUM_ID, albumId)
+                    putString(EXTRA_SELECTED_ALBUM_NAME, albumName)
+                }
             }
-        }
     }
 }

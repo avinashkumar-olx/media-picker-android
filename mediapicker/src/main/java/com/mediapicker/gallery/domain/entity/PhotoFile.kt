@@ -1,59 +1,51 @@
 package com.mediapicker.gallery.domain.entity
 
+import android.os.Parcelable
 import android.text.TextUtils
-
+import kotlinx.parcelize.Parcelize
 import java.io.File
-import java.io.Serializable
 
-class PhotoFile : Serializable, IGalleryItem {
-    var imageId: Long = 0L
-        private set
-    var path: String? = null
-
-    var smallPhotoUrl: String? = null
-        private set
-
-    var fullPhotoUrl: String? = null
-        private set
-
-    var photoBackendId: Long? = null
-        private set
-
-    var action: Action? = null
-    var apolloKey: String? = null
-    var status: Status? = null
-    var error: String? = null
-    var adId: String? = null
+@Parcelize
+class PhotoFile private constructor(
+    var imageId: Long = 0L,
+    var path: String? = null,
+    var smallPhotoUrl: String? = null,
+    var fullPhotoUrl: String? = null,
+    var photoBackendId: Long? = null,
+    var action: Action? = null,
+    var apolloKey: String? = null,
+    var status: Status? = null,
+    var error: String? = null,
+    var adId: String? = null,
     var mimeType: String? = null
+) : IGalleryItem, Parcelable {
 
     val isAlreadyUploaded: Boolean
         get() = !TextUtils.isEmpty(fullPhotoUrl)
 
-    private constructor(builder: Builder) {
-        this.imageId = builder.imageId
-        this.path = builder.path
-        this.smallPhotoUrl = builder.smallPhotoUrl
-        this.fullPhotoUrl = builder.fullPhotoUrl
-        this.photoBackendId = builder.photoBackendId
-        this.action = builder.action
-        this.apolloKey = builder.apolloKey
-        this.status = builder.status
-        this.error = builder.error
-        this.adId = builder.adId
-        this.mimeType = builder.mimeType
-    }
+    private constructor(builder: Builder) : this(
+        imageId = builder.imageId,
+        path = builder.path,
+        smallPhotoUrl = builder.smallPhotoUrl,
+        fullPhotoUrl = builder.fullPhotoUrl,
+        photoBackendId = builder.photoBackendId,
+        action = builder.action,
+        apolloKey = builder.apolloKey,
+        status = builder.status,
+        error = builder.error,
+        adId = builder.adId,
+        mimeType = builder.mimeType
+    )
 
-    constructor(photoSet: PhotoSet) {
-        fullPhotoUrl = photoSet.getImageURL(PhotoSize.FULL)
-        smallPhotoUrl = photoSet.getImageURL(PhotoSize.SMALL)
-        if (photoSet.id != null) {
-            imageId = java.lang.Long.parseLong(photoSet.id!!)
-            photoBackendId = java.lang.Long.parseLong(photoSet.id!!)
-        }
-        apolloKey = photoSet.externalId
-        status = Status.OK
+    constructor(photoSet: PhotoSet) : this(
+        imageId = photoSet.id?.let { java.lang.Long.parseLong(it) } ?: 0L,
+        photoBackendId = photoSet.id?.let { java.lang.Long.parseLong(it) },
+        smallPhotoUrl = photoSet.getImageURL(PhotoSize.SMALL),
+        fullPhotoUrl = photoSet.getImageURL(PhotoSize.FULL),
+        apolloKey = photoSet.externalId,
+        status = Status.OK,
         action = Action.NONE
-    }
+    )
 
     private fun existsFile(path: String): Boolean {
         return File(path).exists()

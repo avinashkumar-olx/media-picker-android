@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.annotation.CallSuper
 import androidx.annotation.LayoutRes
 import androidx.core.content.ContextCompat
+import androidx.core.os.BundleCompat
 import androidx.fragment.app.Fragment
 import com.mediapicker.gallery.R
 import com.mediapicker.gallery.databinding.OssFragmentBaseBinding
@@ -25,11 +26,12 @@ abstract class BaseFragment : Fragment() {
 
     lateinit var childView: View
 
-    @Suppress("UNCHECKED_CAST")
     protected fun getPhotosFromArguments(): List<PhotoFile> {
         this.arguments?.let {
             if (it.containsKey(EXTRA_SELECTED_PHOTOS)) {
-                return it.getSerializable(EXTRA_SELECTED_PHOTOS) as List<PhotoFile>
+                return BundleCompat.getParcelableArrayList(
+                    it, EXTRA_SELECTED_PHOTOS, PhotoFile::class.java
+                ) ?: emptyList()
             }
         }
         return emptyList()
@@ -37,11 +39,12 @@ abstract class BaseFragment : Fragment() {
 
 //    protected abstract fun inflateBiding(inflater: LayoutInflater, container: ViewGroup?): T
 
-    @Suppress("UNCHECKED_CAST")
     protected fun getVideosFromArguments(): List<VideoFile> {
         this.arguments?.let {
             if (it.containsKey(EXTRA_SELECTED_VIDEOS)) {
-                return it.getSerializable(EXTRA_SELECTED_VIDEOS) as List<VideoFile>
+                return BundleCompat.getParcelableArrayList(
+                    it, EXTRA_SELECTED_VIDEOS, VideoFile::class.java
+                ) ?: emptyList()
             }
         }
         return emptyList()

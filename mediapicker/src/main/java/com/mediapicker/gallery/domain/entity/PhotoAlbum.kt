@@ -1,10 +1,14 @@
 package com.mediapicker.gallery.domain.entity
 
-import java.io.Serializable
-import java.util.*
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
-class PhotoAlbum(var albumId: String?, var name: String?) : IGalleryItem, Serializable {
+@Parcelize
+class PhotoAlbum(
+    var albumId: String?,
+    var name: String?,
     private var albumEntries: MutableList<IGalleryItem> = ArrayList()
+) : IGalleryItem, Parcelable {
 
     val firstPhoto: IGalleryItem
         get() = albumEntries[0]
@@ -24,7 +28,6 @@ class PhotoAlbum(var albumId: String?, var name: String?) : IGalleryItem, Serial
     fun addEntryToAlbum(photo: PhotoFile) {
         albumEntries.add(photo)
     }
-
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
